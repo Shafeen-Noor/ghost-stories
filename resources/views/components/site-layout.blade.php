@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="site-header">
-        <a class="brand" href="{{ route('welcome') }}">Ghost Stories</a>
+        <a class="brand" href="{{ route('welcome') }}"><svg aria-hidden="true" viewBox="0 0 30 38" fill="none"><path d="M3 34V15a12 12 0 0 1 24 0v19l-6-4-6 4-6-4z" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="16" r="1.4" fill="currentColor"/><circle cx="19" cy="16" r="1.4" fill="currentColor"/></svg>Ghost Stories</a>
         <nav aria-label="Main navigation">
             @auth
                 <a href="{{ route('stories.index') }}">The archive</a>
@@ -32,6 +32,6 @@
         @endif
         {{ $slot }}
     </main>
-    <footer>A collection of stories from places that stay with us.</footer>
+    <footer><span>For the things we can't quite explain.</span><small>Read slowly. Leave a light on.</small></footer>
 </body>
 </html>

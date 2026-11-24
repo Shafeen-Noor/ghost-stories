@@ -18,18 +18,17 @@
             <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
             <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.1/dist/cdn.min.js"></script>
         @endif
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-breeze.application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+    <body>
+        <div class="auth-screen">
+            <a class="brand" href="{{ route('stories.index') }}">Ghost Stories</a>
+            <div class="auth-box">
+                <p class="eyebrow">A circle of storytellers</p>
+                <h1>Gather around.</h1>
                 {{ $slot }}
             </div>
+            <a href="{{ route('stories.index') }}">← Back to the stories</a>
         </div>
     </body>
 </html>
