@@ -3,3 +3,15 @@ header, main, footer { max-width: 1000px; margin: auto; padding: 28px; }
 a { color: inherit; }
 h1, h2 { font-family: Georgia, serif; line-height: 1.2; }
 .brand { font: bold 24px Georgia, serif; text-decoration: none; }
+
+.site-header, nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+nav form { margin: 0; }
+.auth-panel { max-width: 480px; margin: 40px auto; }
+.field { margin: 20px 0; }
+.field label { display: block; margin-bottom: 6px; font-size: 14px; }
+input:not([type=checkbox]), textarea, select { box-sizing: border-box; width: 100%; padding: 12px; background: #fff; color: #262a25; border: 1px solid #c8c8bc; border-radius: 4px; font: inherit; }
+button, .button { display: inline-block; padding: 12px 22px; border: 0; border-radius: 4px; background: #354c37; color: white; font: inherit; text-decoration: none; cursor: pointer; }
+.text-button { padding: 0; background: transparent; color: inherit; }
+.checkbox { display: block; margin-bottom: 20px; }
+.error { color: #a92828; font-size: 14px; }
+.notice { padding: 12px; background: #e4ebdc; }

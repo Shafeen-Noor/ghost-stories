@@ -10,8 +10,25 @@
 <body>
     <header class="site-header">
         <a class="brand" href="{{ route('welcome') }}">Ghost Stories</a>
+        <nav aria-label="Main navigation">
+            @auth
+                <span>{{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="text-button" type="submit">Log out</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}">Log in</a>
+                <a href="{{ route('register') }}">Register</a>
+            @endauth
+        </nav>
     </header>
-    <main>{{ $slot }}</main>
+    <main>
+        @if(session('status'))
+            <p class="notice" role="status">{{ session('status') }}</p>
+        @endif
+        {{ $slot }}
+    </main>
     <footer>A collection of stories from places that stay with us.</footer>
 </body>
 </html>
