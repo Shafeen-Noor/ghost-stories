@@ -1,8 +1,8 @@
 # Ghost Stories
 
-A class project for sharing ghost stories about places. Built with PHP, Laravel, Blade and SQLite, following the structure used in [blaug](https://github.com/ndeblauw/blaug).
+A class project for sharing ghost stories about places. Built with PHP, Laravel, Blade and SQLite, starting from the teacher's [starter pack](https://github.com/ndeblauw/starterpack) and following the conventions in [blaug](https://github.com/ndeblauw/blaug).
 
-This version uses Laravel 12 and PHP 8.4 to run with the installed Herd version. The class repository now uses Laravel 13 and PHP 8.5.
+PHP 8.5 and Laravel 13, as supplied in the starter pack.
 
 ## Run locally
 
@@ -14,7 +14,7 @@ php artisan migrate --seed
 herd link ghost-stories
 ```
 
-Open http://ghost-stories.test. No frontend build is needed.
+Open http://ghost-stories.test. The starter pack has a CDN fallback. To build the frontend locally, run `npm ci && npm run build`.
 
 ## Tests
 

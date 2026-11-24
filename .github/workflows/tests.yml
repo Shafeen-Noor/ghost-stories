@@ -16,9 +16,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           extensions: mbstring, sqlite3, pdo_sqlite
           coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm run build
       - run: composer install --prefer-dist --no-interaction --no-progress
       - run: cp .env.example .env
       - run: php artisan key:generate
