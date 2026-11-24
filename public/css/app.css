@@ -1,0 +1,5 @@
+body { margin: 0; background: #f5f2eb; color: #262a25; font: 17px/1.7 system-ui, sans-serif; }
+header, main, footer { max-width: 1000px; margin: auto; padding: 28px; }
+a { color: inherit; }
+h1, h2 { font-family: Georgia, serif; line-height: 1.2; }
+.brand { font: bold 24px Georgia, serif; text-decoration: none; }
