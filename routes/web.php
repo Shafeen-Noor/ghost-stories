@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\StoryController;
 use App\Http\Controllers\Userzone\DashboardController;
+use App\Http\Controllers\Userzone\LocationController;
 use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\StoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +19,6 @@ Route::resource('stories', StoryController::class)->only(['index', 'show']);
  */
 require __DIR__.'/auth.php';
 
-
 /*
  * Userzone routes
  */
@@ -26,7 +26,10 @@ Route::middleware('auth')->group(function () {
     // For the user's dashboard (after login)
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    // Todo: add your Userzone routes here
+    Route::prefix('user')->name('userzone.')->group(function () {
+        Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class)->only(['index', 'create', 'store']);
+        Route::resource('locations', LocationController::class)->only(['create', 'store']);
+    });
 
     // For the user's profile management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

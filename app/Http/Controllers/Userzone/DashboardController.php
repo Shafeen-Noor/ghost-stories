@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Userzone;
 
 use App\Http\Controllers\Controller;
-use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class DashboardController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(): View
+    public function __invoke(): RedirectResponse
     {
-        return view('userzone.dashboard');
+        return redirect()->route('userzone.stories.index');
     }
 }

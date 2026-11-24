@@ -4,7 +4,7 @@
             <p class="eyebrow">An archive of the unexplained</p>
             <h1>Every place has a story.<br><em>Some never leave you.</em></h1>
             <p class="intro">Empty houses. The last train home. A light where there shouldn't be one. Read the stories people bring back.</p>
-            <a class="button" href="{{ route('login') }}">Tell your story <span aria-hidden="true">↗</span></a>
+            <a class="button" href="{{ route('userzone.stories.create') }}">Tell your story <span aria-hidden="true">↗</span></a>
         </div>
         <div class="hero-art" aria-hidden="true">
             <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">

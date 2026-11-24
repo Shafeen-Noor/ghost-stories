@@ -12,12 +12,15 @@
         <a class="brand" href="{{ route('welcome') }}">Ghost Stories</a>
         <nav aria-label="Main navigation">
             @auth
-                <span>{{ auth()->user()->name }}</span>
+                <a href="{{ route('stories.index') }}">The archive</a>
+                <a href="{{ route('userzone.stories.index') }}">My stories</a>
+                <a href="{{ route('userzone.stories.create') }}">Tell a story ↗</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button class="text-button" type="submit">Log out</button>
                 </form>
             @else
+                <a href="{{ route('stories.index') }}">The archive</a>
                 <a href="{{ route('login') }}">Log in</a>
                 <a href="{{ route('register') }}">Register</a>
             @endauth
