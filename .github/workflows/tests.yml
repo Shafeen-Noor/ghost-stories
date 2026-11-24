@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - run: cp .env.example .env
+      - run: php artisan key:generate
+      - run: vendor/bin/pint
+      - run: php artisan test --compact
+      - name: Package local build
+        run: tar --exclude=.git --exclude=.env --exclude='database/*.sqlite*' --exclude='storage/logs/*.log' -czf /tmp/ghost-stories.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ghost-stories
+          path: /tmp/ghost-stories.tar.gz
+          retention-days: 7
