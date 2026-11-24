@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+
 class WelcomeController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke()
+    public function __invoke(): RedirectResponse
     {
-        return view('welcome');
+        return redirect()->route('stories.index');
     }
 }

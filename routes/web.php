@@ -3,6 +3,7 @@
 use App\Http\Controllers\Userzone\DashboardController;
 use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\StoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/', WelcomeController::class)->name('welcome');
 
-// Todo: add your public routes here
+Route::resource('stories', StoryController::class)->only(['index', 'show']);
 
 /*
  * Authentication routes
