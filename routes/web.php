@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::prefix('user')->name('userzone.')->group(function () {
-        Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class)->only(['index', 'create', 'store']);
+        Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class)->except('show');
         Route::resource('locations', LocationController::class)->only(['create', 'store']);
     });
 
