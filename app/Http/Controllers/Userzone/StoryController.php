@@ -15,7 +15,7 @@ class StoryController extends Controller
 {
     public function index(Request $request): View
     {
-        $stories = $request->user()->stories()->with(['author', 'location'])->latest()->get();
+        $stories = $request->user()->stories()->withVotingFor($request->user())->with(['author', 'location'])->latest()->get();
 
         return view('userzone.stories.index', compact('stories'));
     }

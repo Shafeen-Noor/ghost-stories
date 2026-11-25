@@ -4,6 +4,7 @@ use App\Http\Controllers\StoryController;
 use App\Http\Controllers\Userzone\DashboardController;
 use App\Http\Controllers\Userzone\LocationController;
 use App\Http\Controllers\Userzone\ProfileController;
+use App\Http\Controllers\VoteController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,8 @@ require __DIR__.'/auth.php';
  * Userzone routes
  */
 Route::middleware('auth')->group(function () {
+    Route::post('stories/{story}/vote', [VoteController::class, 'store'])->name('stories.vote.store');
+    Route::delete('stories/{story}/vote', [VoteController::class, 'destroy'])->name('stories.vote.destroy');
     // For the user's dashboard (after login)
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 

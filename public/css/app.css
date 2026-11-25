@@ -105,3 +105,11 @@ textarea { resize: vertical; line-height: 1.8; }
 .story-actions form { margin: 0; }
 .delete-button { color: #963b32; background: transparent; border-color: #c7a49e; padding: 7px 12px; font-size: 12px; }
 .delete-button:hover { background: #963b32; border-color: #963b32; }
+
+.story-votes { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 20px; font-size: 11px; }
+.story-votes form { display: flex; gap: 6px; margin: 0; flex-wrap: wrap; }
+.vote-count { width: 100%; color: var(--muted); }
+.vote-button { font-size: 11px; padding: 6px 10px; background: transparent; color: var(--green); }
+.vote-button[aria-pressed="true"] { background: var(--green); color: white; }
+.remove-vote { background: transparent; color: var(--muted); border: 0; padding: 6px; font-size: 10px; text-decoration: underline; }
+.vote-login { font-size: 11px; }

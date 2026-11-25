@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Story extends Model
 {
@@ -42,6 +44,19 @@ class Story extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
+    }
+
+    public function scopeWithVotingFor(Builder $query, ?User $user): void
+    {
+        $query->withCount([
+            'votes as upvotes_count' => fn (Builder $votes): Builder => $votes->where('value', 1),
+            'votes as downvotes_count' => fn (Builder $votes): Builder => $votes->where('value', -1),
+        ])->with(['votes' => fn (HasMany $votes): HasMany => $votes->where('user_id', $user?->id)]);
     }
 
     public function location(): BelongsTo

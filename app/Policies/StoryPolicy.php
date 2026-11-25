@@ -7,6 +7,11 @@ use App\Models\User;
 
 class StoryPolicy
 {
+    public function vote(User $user, Story $story): bool
+    {
+        return $story->status === 'visible' && $user->id !== $story->author_id;
+    }
+
     public function update(User $user, Story $story): bool
     {
         return $user->id === $story->author_id;
