@@ -18,12 +18,11 @@ class StoryController extends Controller
         return view('stories.index', compact('stories'));
     }
 
-    public function show(int $id): View
+    public function show(Story $story): View
     {
-        $story = Story::query()
-            ->where('status', 'visible')
-            ->with(['author', 'location'])
-            ->findOrFail($id);
+        abort_unless($story->status === 'visible', 404);
+
+        $story->load(['author', 'location']);
 
         return view('stories.show', compact('story'));
     }
