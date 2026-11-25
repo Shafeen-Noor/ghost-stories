@@ -113,3 +113,11 @@ textarea { resize: vertical; line-height: 1.8; }
 .vote-button[aria-pressed="true"] { background: var(--green); color: white; }
 .remove-vote { background: transparent; color: var(--muted); border: 0; padding: 6px; font-size: 10px; text-decoration: underline; }
 .vote-login { font-size: 11px; }
+
+.location-picker { border: 1px solid var(--line); padding: 20px; margin: 25px 0; min-width: 0; }
+.location-picker legend { padding: 0 8px; font-family: Georgia, serif; font-size: 21px; }
+.location-picker .field-help { margin-top: 0; }
+.location-picker details { margin-top: 20px; }
+.location-picker summary { cursor: pointer; font-size: 12px; }
+.location-picker select { max-width: 100%; }
+.location-picker select:disabled { opacity: .6; }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\Userzone\DashboardController;
 use App\Http\Controllers\Userzone\LocationController;
@@ -28,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('stories/{story}/vote', [VoteController::class, 'destroy'])->name('stories.vote.destroy');
     // For the user's dashboard (after login)
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('user/regions/{country}', RegionController::class)->name('geography.regions');
 
     Route::prefix('user')->name('userzone.')->group(function () {
         Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class)->except('show');

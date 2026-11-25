@@ -2,29 +2,26 @@
 
 namespace App\Http\Controllers\Userzone;
 
+use App\Geography;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LocationRequest;
 use App\Models\Location;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class LocationController extends Controller
 {
-    public function create(): View
+    public function create(Geography $geography): View
     {
-        return view('userzone.locations.create');
+        return view('userzone.locations.create', compact('geography'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(LocationRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:3', 'max:255', 'unique:locations,name'],
-            'description' => ['nullable', 'string', 'max:2000'],
-        ]);
-
-        $location = Location::create($validated);
+        $validated = $request->validated();
+        $location = Location::fromGeography($validated['country_code'], $validated['region_code'] ?? '');
 
         return redirect()->route('userzone.stories.create', ['location' => $location->id])
-            ->with('status', 'Location added. Now tell its story.');
+            ->with('status', 'Location selected. Now tell its story.');
     }
 }

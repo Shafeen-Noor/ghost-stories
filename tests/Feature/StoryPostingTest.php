@@ -40,12 +40,12 @@ it('redirects guests who try to publish', function () {
     $this->assertDatabaseCount('stories', 0);
 });
 
-it('adds a location before writing a story', function () {
+it('selects a location before writing a story', function () {
     $this->actingAs(User::factory()->create())->post(route('userzone.locations.store'), [
-        'name' => 'The old glass house',
-        'description' => 'A greenhouse beyond the orchard.',
+        'country_code' => 'ES',
+        'region_code' => 'ES-CT',
     ])->assertSessionHasNoErrors();
 
-    $location = Location::where('name', 'The old glass house')->firstOrFail();
+    $location = Location::where('country_code', 'ES')->where('region_code', 'ES-CT')->firstOrFail();
     $this->get(route('userzone.stories.create'))->assertSee($location->name);
 });
