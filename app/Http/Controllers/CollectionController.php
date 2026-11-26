@@ -56,7 +56,7 @@ class CollectionController extends Controller
         abort_unless($story->status === 'visible', 404);
         $data = $request->validate([
             'collection_id' => ['nullable', 'required_without:name', 'integer', Rule::exists('reading_collections', 'id')->where('user_id', $request->user()->id)],
-            'name' => ['nullable', 'required_without:collection_id', 'prohibited_with:collection_id', 'string', 'max:80'],
+            'name' => ['nullable', 'required_without:collection_id', Rule::prohibitedIf($request->filled('collection_id')), 'string', 'max:80'],
         ]);
         $collection = ! empty($data['collection_id'])
             ? $request->user()->readingCollections()->findOrFail($data['collection_id'])
