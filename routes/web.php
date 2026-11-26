@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\StoryMediaController;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', WelcomeController::class)->name('welcome');
 
 Route::get('stories/{story}/media/{asset}', StoryMediaController::class)->where('asset', 'cover|background|gallery-[0-5]')->name('stories.media');
+Route::get('discover', [DiscoveryController::class, 'random'])->name('discovery.random');
 Route::resource('stories', StoryController::class)->only(['index', 'show']);
 Route::resource('locations', App\Http\Controllers\LocationController::class)->only(['index', 'show']);
 Route::get('users/{user}', [AuthorController::class, 'show'])->name('authors.show');

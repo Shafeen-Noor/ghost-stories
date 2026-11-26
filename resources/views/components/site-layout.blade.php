@@ -3,17 +3,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title }} | Ghost Stories</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=editorial-1">
+    <title>{{ $title }} | Unexplained</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=discovery-1">
     <script src="{{ asset('js/editorial.js') }}" defer></script>
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="publication-header">
-        <div class="utility-bar"><span><i class="live-dot" aria-hidden="true"></i> AN INDEPENDENT JOURNAL OF THE UNEXPLAINED</span><span>{{ now()->format('l, F j, Y') }}</span></div>
-        <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Ghost Stories home">GHOST STORIES<span class="masthead-star" aria-hidden="true">✳</span></a></div>
         <div class="navigation-row">
-            <nav aria-label="Main navigation"><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('stories.index', ['sort' => 'score']) }}">Most vouched ↗</a></nav>
+            <nav aria-label="Main navigation"><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('discovery.random') }}">Surprise me ↗</a></nav>
             <div class="navigation-actions">
                 @auth
                     <a class="write-link" href="{{ route('userzone.stories.create') }}">Write a story <span aria-hidden="true">↗</span></a>
@@ -23,11 +21,13 @@
                 @endauth
             </div>
         </div>
+        <div class="utility-bar"><span><i class="live-dot" aria-hidden="true"></i> AN INDEPENDENT JOURNAL OF THE UNEXPLAINED</span><span>{{ now()->format('l, F j, Y') }}</span></div>
+        <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Unexplained home">UNEXPLAINED<span class="masthead-star" aria-hidden="true">✳</span></a></div>
     </header>
     <main id="main-content">
         @if(session('status'))<p class="notice" role="status"><span aria-hidden="true">✓</span> {{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>@endif
         {{ $slot }}
     </main>
-    <footer class="publication-footer"><div><a class="footer-brand" href="{{ route('stories.index') }}">GHOST<br>STORIES.</a><p>Some stories stay with you.<br>These are the ones worth sharing.</p></div><div class="footer-links"><a href="{{ route('stories.index') }}">Read the journal</a><a href="{{ route('locations.index') }}">Explore places</a><a href="{{ route('userzone.stories.create') }}">Share your story</a><small>Independent stories. Open minds.<br>© {{ now()->year }} Ghost Stories</small></div></footer>
+    <footer class="publication-footer"><div><a class="footer-brand" href="{{ route('stories.index') }}">UNEX<br>PLAINED.</a><p>Some stories stay with you.<br>These are the ones worth sharing.</p></div><div class="footer-links"><a href="{{ route('stories.index') }}">Read the journal</a><a href="{{ route('locations.index') }}">Explore places</a><a href="{{ route('userzone.stories.create') }}">Share your story</a><small>Independent stories. Open minds.<br>© {{ now()->year }} Unexplained</small></div></footer>
 </body>
 </html>
