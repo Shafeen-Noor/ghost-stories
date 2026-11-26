@@ -14,6 +14,11 @@ class Comment extends Model
 
     protected $guarded = [];
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
     public function replies(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');

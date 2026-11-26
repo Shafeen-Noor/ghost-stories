@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Userzone;
 
 use App\Http\Controllers\Controller;
+use App\Models\Story;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -15,6 +17,14 @@ class DashboardController extends Controller
         $trashed = $user->stories()->onlyTrashed()->count();
         $stories = $user->stories()->withVotingFor($user)->with(['author', 'location', 'tags'])->latest()->take(3)->get();
 
-        return view('userzone.dashboard', compact('user', 'published', 'trashed', 'stories'));
+        $lastVisit = $request->session()->get('desk.last_visit.'.$user->id, now()->subWeek()->toIso8601String());
+        $investigations = Story::visible()->whereHas('readingCollections', fn (Builder $query): Builder => $query->where('reading_collections.user_id', $user->id))
+            ->with('location')->withCount(['comments as new_comments' => function (Builder $query) use ($lastVisit): void {
+                $query->where('status', 'visible')->where('created_at', '>', $lastVisit)
+                    ->where(fn (Builder $visible): Builder => $visible->whereNull('parent_id')->orWhereHas('parent', fn (Builder $parent): Builder => $parent->where('status', 'visible')));
+            }])->orderByDesc('new_comments')->latest()->limit(6)->get();
+        $request->session()->put('desk.last_visit.'.$user->id, now()->toDateTimeString());
+
+        return view('userzone.dashboard', compact('user', 'published', 'trashed', 'stories', 'investigations'));
     }
 }
