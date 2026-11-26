@@ -45,6 +45,7 @@ document.querySelectorAll('.story-editor').forEach((editor) => {
         if (mode === 'write') source.value = Array.from(rich.childNodes).map(markdown).join('').replace(/\n{3,}/g, '\n\n').trim();
         updateCount();
     }
+    editor.addEventListener('story:sync', sync);
     rich.addEventListener('input', sync);
     source.addEventListener('input', updateCount);
     rich.addEventListener('paste', (event) => {

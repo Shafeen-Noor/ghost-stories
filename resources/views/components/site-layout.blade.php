@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} | Unexplained</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=discovery-1">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=discovery-3">
     <script src="{{ asset('js/editorial.js') }}" defer></script>
 </head>
-<body>
+<body @if(request()->routeIs('userzone.stories.create', 'userzone.stories.edit')) class="is-writing" @endif>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="publication-header">
         <div class="navigation-row">

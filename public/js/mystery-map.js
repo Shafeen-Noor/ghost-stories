@@ -20,6 +20,7 @@
         return {latitude: Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180 / Math.PI, longitude: ((x * 360 - 180 + 540) % 360) - 180};
     }
     function render() {
+        if(!map.clientWidth || !map.clientHeight)return;
         center.y = Math.max(0, Math.min(1, center.y)); center.x = (center.x + 1) % 1;
         const n = 2 ** zoom, size = n * 256;
         const left = center.x * size - map.clientWidth / 2, top = center.y * size - map.clientHeight / 2;
@@ -55,9 +56,18 @@
     }
     map.querySelectorAll('[data-map-zoom]').forEach(button => button.addEventListener('click',()=>{ zoom=Math.max(2,Math.min(15,zoom+Number(button.dataset.mapZoom)));render(); }));
     map.querySelector('[data-map-reset]')?.addEventListener('click',()=>{zoom=4;center=project(30,5);render();});
+    function choosePin(point) {
+        selected=point;
+        document.querySelector('[name="latitude"]').value=point.latitude.toFixed(6);
+        document.querySelector('[name="longitude"]').value=point.longitude.toFixed(6);
+        document.querySelector('[data-pin-label]').textContent='Map pin: '+point.latitude.toFixed(3)+', '+point.longitude.toFixed(3);
+        map.dispatchEvent(new Event('input', {bubbles:true}));render();
+    }
+    map.querySelector('[data-map-choose-center]')?.addEventListener('click',()=>choosePin(unproject(center.x,center.y)));
+    map.addEventListener('map:clear',()=>{selected=null;render();});
     map.addEventListener('pointerdown',event=>{ if(event.target.closest('button,a'))return; drag={x:event.clientX,y:event.clientY,center:{...center}};moved=false; map.setPointerCapture(event.pointerId); });
     map.addEventListener('pointermove',event=>{ if(!drag)return; const dx=event.clientX-drag.x,dy=event.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>5)moved=true; const size=256*2**zoom;center={x:drag.center.x-dx/size,y:drag.center.y-dy/size}; if(!frame)frame=requestAnimationFrame(()=>{frame=null;render();}); });
-    map.addEventListener('pointerup',event=>{ if(!drag)return;drag=null;if(picker&&!moved){const rect=map.getBoundingClientRect(),size=256*2**zoom;selected=unproject(center.x+(event.clientX-rect.left-map.clientWidth/2)/size,center.y+(event.clientY-rect.top-map.clientHeight/2)/size);document.querySelector('[name="latitude"]').value=selected.latitude.toFixed(6);document.querySelector('[name="longitude"]').value=selected.longitude.toFixed(6);document.querySelector('[data-pin-label]').textContent='Map pin: '+selected.latitude.toFixed(3)+', '+selected.longitude.toFixed(3);}render(); });
+    map.addEventListener('pointerup',event=>{ if(!drag)return;drag=null;if(picker&&!moved){const rect=map.getBoundingClientRect(),size=256*2**zoom;choosePin(unproject(center.x+(event.clientX-rect.left-map.clientWidth/2)/size,center.y+(event.clientY-rect.top-map.clientHeight/2)/size));}render(); });
     map.addEventListener('pointercancel',()=>{drag=null;render();});
     map.addEventListener('keydown',event=>{if(event.target!==map)return;const step=100/(256*2**zoom);if(event.key==='ArrowLeft')center.x-=step;else if(event.key==='ArrowRight')center.x+=step;else if(event.key==='ArrowUp')center.y-=step;else if(event.key==='ArrowDown')center.y+=step;else if(event.key==='+'||event.key==='=')zoom=Math.min(15,zoom+1);else if(event.key==='-')zoom=Math.max(2,zoom-1);else return;event.preventDefault();render();});
     document.querySelectorAll('[data-map-story]').forEach(button=>button.addEventListener('click',()=>{const pin=pins.find(p=>String(p.id)===button.dataset.mapStory);if(pin)show(pin);}));
