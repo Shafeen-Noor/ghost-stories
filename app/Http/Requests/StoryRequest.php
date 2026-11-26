@@ -31,6 +31,8 @@ class StoryRequest extends FormRequest
         $regions = is_string($country) ? app(Geography::class)->regions($country) : [];
 
         return [
+            'latitude' => ['nullable', 'required_with:longitude', 'numeric', 'between:-85,85'],
+            'longitude' => ['nullable', 'required_with:latitude', 'numeric', 'between:-180,180'],
             'cover_preset' => ['nullable', 'string', Rule::in(['auto', 'house', 'station', 'coast'])],
             'backdrop' => ['nullable', 'string', Rule::in(['none', 'cover', 'house', 'station', 'coast'])],
             'reading_theme' => ['nullable', 'string', Rule::in(['light', 'dark', 'sepia'])],

@@ -91,6 +91,10 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
             $location = Location::firstWhere('name', $entry['location']) ?? Location::factory()->create([
                 'name' => $entry['location'], 'description' => $entry['description'],
             ]);
+            if ($location->latitude === null) {
+                $coordinates = [[55.9533, -3.1883], [51.5074, -0.1278], [38.7223, -9.1393], [41.3874, 2.1686]][$index];
+                $location->update(['latitude' => $coordinates[0], 'longitude' => $coordinates[1]]);
+            }
             $owner = $index === 3 ? $admin : $author;
             $story = Story::where('title', $entry['title'])->where('author_id', $owner->id)->first()
                 ?? Story::factory()->create([

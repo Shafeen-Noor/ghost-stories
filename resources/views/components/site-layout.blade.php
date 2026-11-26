@@ -11,7 +11,7 @@
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="publication-header">
         <div class="navigation-row">
-            <nav aria-label="Main navigation"><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('discovery.random') }}">Surprise me ↗</a></nav>
+            <nav aria-label="Main navigation"><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('discovery.map') }}" @if(request()->routeIs('discovery.map')) aria-current="page" @endif>Mystery map</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('discovery.random') }}">Surprise me ↗</a></nav>
             <div class="navigation-actions">
                 @auth
                     <a class="write-link" href="{{ route('userzone.stories.create') }}">Write a story <span aria-hidden="true">↗</span></a>
