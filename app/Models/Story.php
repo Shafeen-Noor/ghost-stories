@@ -15,6 +15,12 @@ class Story extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const CATEGORIES = [
+        'ghost' => 'Ghosts & encounters',
+        'urban_legend' => 'Folklore & urban legends',
+        'conspiracy' => 'Conspiracy theories',
+    ];
+
     protected $guarded = [];
 
     protected static function booted(): void
@@ -154,13 +160,17 @@ class Story extends Model
 
     public function visibleComments(): HasMany
     {
-        return $this->comments()->where('status', 'visible')->where(fn (Builder $query): Builder => $query->whereNull('parent_id')
-            ->orWhereHas('parent', fn (Builder $parent): Builder => $parent->where('status', 'visible')));
+        return $this->comments()->visibleInThread();
     }
 
     public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
+    }
+
+    public function scopeWithCardDataFor(Builder $query, ?User $reader): void
+    {
+        $query->withVotingFor($reader)->with(['author', 'location', 'tags']);
     }
 
     public function scopeWithVotingFor(Builder $query, ?User $user): void

@@ -88,6 +88,8 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
             'body' => 'The lift has six buttons, but last night a seventh lit up. I watched it climb past my floor. When the doors opened again, someone had left a key on the floor. Its label read: Do not go upstairs.',
         ];
 
+        $collection = $admin->readingCollections()->firstWhere('name', 'Investigate later') ?? ReadingCollection::factory()->create(['user_id' => $admin->id, 'name' => 'Investigate later']);
+
         foreach ($stories as $index => $entry) {
             $location = Location::firstWhere('name', $entry['location']) ?? Location::factory()->create([
                 'name' => $entry['location'], 'description' => $entry['description'],
@@ -102,7 +104,6 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
                     'title' => $entry['title'], 'body' => $entry['body'], 'category' => $entry['category'],
                     'author_id' => $owner->id, 'location_id' => $location->id,
                 ]);
-            $collection = $admin->readingCollections()->firstWhere('name', 'Investigate later') ?? ReadingCollection::factory()->create(['user_id' => $admin->id, 'name' => 'Investigate later']);
             $collection->stories()->syncWithoutDetaching([$story->id]);
             foreach ($readers as $readerIndex => $reader) {
                 if (! $story->caseOpinions()->where('user_id', $reader->id)->exists()) {

@@ -20,7 +20,7 @@ class StoryController extends Controller
 {
     public function index(Request $request): View
     {
-        $stories = $request->user()->stories()->withVotingFor($request->user())->with(['author', 'location', 'tags'])->latest()->get();
+        $stories = $request->user()->stories()->withCardDataFor($request->user())->latest()->get();
 
         return view('userzone.stories.index', compact('stories'));
     }
@@ -28,9 +28,9 @@ class StoryController extends Controller
     public function show(Request $request, Story $story): View
     {
         Gate::authorize('update', $story);
-        $story = Story::withVotingFor($request->user())->with(['author', 'location', 'tags'])->findOrFail($story->id);
+        $story = Story::withCardDataFor($request->user())->findOrFail($story->id);
         $story->loadCount(['visibleComments as discussion_count']);
-        $comments = $story->comments()->where('status', 'visible')->whereNull('parent_id')->withCount('supporters')->with(['author', 'supporters' => fn ($query) => $query->where('users.id', $request->user()?->id), 'replies' => fn ($query) => $query->where('status', 'visible')->with('author')->oldest()])->latest()->paginate(10, ['*'], 'comments_page');
+        $comments = $story->comments()->threadsFor($request->user())->paginate(10, ['*'], 'comments_page');
 
         return view('stories.show', compact('story', 'comments'));
     }

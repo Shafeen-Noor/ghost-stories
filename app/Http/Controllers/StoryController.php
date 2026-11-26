@@ -26,7 +26,7 @@ class StoryController extends Controller
 
         $filters = $request->filters();
         $query = Story::query()->visible()->filter($filters)
-            ->withVotingFor($request->user())->with(['author', 'location', 'tags']);
+            ->withCardDataFor($request->user());
         if ($filters['sort'] === 'score') {
             $query->orderByDesc('truth_score');
         }
@@ -50,7 +50,7 @@ class StoryController extends Controller
         ])->load(['votes' => fn (HasMany $votes): HasMany => $votes->where('user_id', $request->user()?->id)]);
 
         $story->loadCount(['visibleComments as discussion_count']);
-        $comments = $story->comments()->where('status', 'visible')->whereNull('parent_id')->withCount('supporters')->with(['author', 'supporters' => fn ($query) => $query->where('users.id', $request->user()?->id), 'replies' => fn ($query) => $query->where('status', 'visible')->with('author')->oldest()])->latest()->paginate(10, ['*'], 'comments_page');
+        $comments = $story->comments()->threadsFor($request->user())->paginate(10, ['*'], 'comments_page');
 
         return view('stories.show', compact('story', 'comments'));
     }

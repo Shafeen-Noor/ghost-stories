@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Geography;
+use App\Models\Story;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -50,7 +51,7 @@ class StoryRequest extends FormRequest
             'tags.*' => ['integer', 'distinct', 'exists:tags,id'],
             'title' => ['required', 'string', 'min:3', 'max:255'],
             'body' => ['required', 'string', 'min:20', 'max:30000'],
-            'category' => ['required', 'string', Rule::in(['ghost', 'urban_legend', 'conspiracy'])],
+            'category' => ['required', 'string', Rule::in(array_keys(Story::CATEGORIES))],
             'location_id' => ['nullable', 'integer', 'required_without:country_code', Rule::prohibitedIf($this->filled('country_code')), 'exists:locations,id'],
             'country_code' => ['nullable', 'required_without:location_id', 'string', Rule::in(array_keys(app(Geography::class)->countries()))],
             'region_code' => ['nullable', 'string', Rule::prohibitedIf($this->filled('location_id')), Rule::in(array_keys($regions))],

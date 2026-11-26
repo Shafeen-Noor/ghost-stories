@@ -29,7 +29,7 @@ class CollectionController extends Controller
     public function show(Request $request, ReadingCollection $collection): View
     {
         abort_unless($collection->user_id === $request->user()->id, 403);
-        $stories = $collection->stories()->visible()->withVotingFor($request->user())->with(['author', 'location', 'tags'])->latest()->paginate(9);
+        $stories = $collection->stories()->visible()->withCardDataFor($request->user())->latest()->paginate(9);
 
         return view('collections.show', compact('collection', 'stories'));
     }

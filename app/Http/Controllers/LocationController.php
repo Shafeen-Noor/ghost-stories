@@ -23,8 +23,7 @@ class LocationController extends Controller
 
     public function show(Request $request, Location $location): View
     {
-        $stories = $location->stories()->visible()->withVotingFor($request->user())
-            ->with(['author', 'location', 'tags'])->orderByDesc('truth_score')->latest()->paginate(9);
+        $stories = $location->stories()->visible()->withCardDataFor($request->user())->orderByDesc('truth_score')->latest()->paginate(9);
 
         return view('locations.show', compact('location', 'stories'));
     }

@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\CaseOpinion;
 use App\Models\Comment;
 use App\Models\Location;
+use App\Models\ReadingCollection;
 use App\Models\Story;
 use App\Models\Tag;
 use App\Models\User;
@@ -11,7 +13,7 @@ it('seeds every model and the required administrator on a clean database', funct
     $this->seed();
     $admin = User::where('email', 'admin@admin.com')->firstOrFail();
     expect($admin->is_admin)->toBeTrue();
-    foreach ([User::class, Story::class, Location::class, Comment::class, Vote::class, Tag::class] as $model) {
+    foreach ([User::class, Story::class, Location::class, Comment::class, Vote::class, Tag::class, ReadingCollection::class, CaseOpinion::class] as $model) {
         expect($model::count())->toBeGreaterThan(0);
     }
 
@@ -26,9 +28,9 @@ it('seeds every model and the required administrator on a clean database', funct
 
 it('can run the seeder again without duplicating sample data', function () {
     $this->seed();
-    $counts = [Story::count(), Location::count(), User::count(), Comment::count(), Vote::count(), Tag::count()];
+    $counts = [Story::count(), Location::count(), User::count(), Comment::count(), Vote::count(), Tag::count(), ReadingCollection::count(), CaseOpinion::count()];
 
     $this->seed();
 
-    expect([Story::count(), Location::count(), User::count(), Comment::count(), Vote::count(), Tag::count()])->toBe($counts);
+    expect([Story::count(), Location::count(), User::count(), Comment::count(), Vote::count(), Tag::count(), ReadingCollection::count(), CaseOpinion::count()])->toBe($counts);
 });

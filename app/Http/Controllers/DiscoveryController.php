@@ -13,7 +13,7 @@ class DiscoveryController extends Controller
     public function random(Request $request): RedirectResponse
     {
         $filters = $request->validate([
-            'category' => ['nullable', 'string', Rule::in(['ghost', 'urban_legend', 'conspiracy'])],
+            'category' => ['nullable', 'string', Rule::in(array_keys(Story::CATEGORIES))],
             'country' => ['nullable', 'string', Rule::in(array_keys(app(Geography::class)->countries()))],
         ]);
         $query = Story::visible()->filter($filters);

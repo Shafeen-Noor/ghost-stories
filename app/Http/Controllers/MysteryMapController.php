@@ -13,7 +13,7 @@ class MysteryMapController extends Controller
     public function __invoke(Request $request, Geography $geography): View
     {
         $filters = $request->validate([
-            'category' => ['nullable', 'string', Rule::in(['ghost', 'urban_legend', 'conspiracy'])],
+            'category' => ['nullable', 'string', Rule::in(array_keys(Story::CATEGORIES))],
             'country' => ['nullable', 'string', Rule::in(array_keys($geography->countries()))],
         ]);
         $stories = Story::visible()->filter($filters)->with('location')->latest()->limit(250)->get();

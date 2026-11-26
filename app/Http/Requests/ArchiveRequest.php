@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Geography;
+use App\Models\Story;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,7 +18,7 @@ class ArchiveRequest extends FormRequest
     {
         return [
             'q' => ['nullable', 'string', 'max:80'],
-            'category' => ['nullable', 'string', Rule::in(['ghost', 'urban_legend', 'conspiracy'])],
+            'category' => ['nullable', 'string', Rule::in(array_keys(Story::CATEGORIES))],
             'tag' => ['nullable', 'integer', 'exists:tags,id'],
             'country' => ['nullable', 'string', Rule::in(array_keys(app(Geography::class)->countries()))],
             'sort' => ['nullable', 'string', Rule::in(['latest', 'score'])],
