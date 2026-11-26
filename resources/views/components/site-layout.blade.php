@@ -30,7 +30,7 @@
     </header>
     <main>
         @if(session('status'))
-            <p class="notice" role="status">{{ session('status') }}</p>
+            <p class="notice" role="status">{{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>
         @endif
         {{ $slot }}
     </main>

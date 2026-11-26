@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class, 'author_id');
     }
 
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
+    }
+
     protected function casts(): array
     {
         return [

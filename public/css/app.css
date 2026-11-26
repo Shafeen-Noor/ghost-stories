@@ -150,3 +150,6 @@ textarea { resize: vertical; line-height: 1.8; }
 .section-nav { flex-wrap: wrap; margin: 25px 0; }
 .section-nav a { text-decoration: underline; }
 .site-header nav { flex-wrap: wrap; }
+
+.account-section { margin-top: 40px; padding-top: 25px; border-top: 1px solid var(--line); }
+.account-section summary { cursor: pointer; color: #963b32; }
