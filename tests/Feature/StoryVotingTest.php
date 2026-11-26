@@ -80,12 +80,12 @@ it('shows vote totals and marks the readers current choice', function () {
     $this->get(route('stories.index'))->assertOk()->assertSee('1 up · 1 down');
 });
 
-it('removes votes when the author deletes their story', function () {
+it('preserves votes while a story is in the trash', function () {
     $vote = Vote::factory()->create();
 
     $this->actingAs($vote->story->author)->delete(route('userzone.stories.destroy', $vote->story))
         ->assertRedirect(route('userzone.stories.index'));
 
-    $this->assertModelMissing($vote->story);
-    $this->assertModelMissing($vote);
+    $this->assertSoftDeleted($vote->story);
+    $this->assertModelExists($vote);
 });

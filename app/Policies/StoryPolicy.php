@@ -9,7 +9,7 @@ class StoryPolicy
 {
     public function vote(User $user, Story $story): bool
     {
-        return $story->status === 'visible' && $user->id !== $story->author_id;
+        return ! $story->trashed() && $story->status === 'visible' && $user->id !== $story->author_id;
     }
 
     public function update(User $user, Story $story): bool
@@ -18,6 +18,11 @@ class StoryPolicy
     }
 
     public function delete(User $user, Story $story): bool
+    {
+        return $user->id === $story->author_id;
+    }
+
+    public function restore(User $user, Story $story): bool
     {
         return $user->id === $story->author_id;
     }

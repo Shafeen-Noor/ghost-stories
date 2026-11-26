@@ -46,7 +46,7 @@ it('lets an author delete their story', function () {
     $this->actingAs($story->author)->delete(route('userzone.stories.destroy', $story))
         ->assertRedirect(route('userzone.stories.index'));
 
-    $this->assertModelMissing($story);
+    $this->assertSoftDeleted($story);
     $this->get(route('stories.show', $story))->assertNotFound();
 });
 

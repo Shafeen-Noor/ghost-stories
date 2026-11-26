@@ -57,7 +57,7 @@ class StoryController extends Controller
 
         $story->delete();
 
-        return redirect()->route('userzone.stories.index')->with('status', 'Your story has been deleted.');
+        return redirect()->route('userzone.stories.index')->with('status', 'Your story was moved to the trash. You can restore it.');
     }
 
     /** @return array<string, mixed> */

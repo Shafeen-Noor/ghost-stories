@@ -5,6 +5,7 @@ use App\Http\Controllers\StoryController;
 use App\Http\Controllers\Userzone\DashboardController;
 use App\Http\Controllers\Userzone\LocationController;
 use App\Http\Controllers\Userzone\ProfileController;
+use App\Http\Controllers\Userzone\TrashController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::get('user/regions/{country}', RegionController::class)->name('geography.regions');
 
     Route::prefix('user')->name('userzone.')->group(function () {
+        Route::get('trash', [TrashController::class, 'index'])->name('trash.index');
+        Route::patch('stories/{story}/restore', [TrashController::class, 'restore'])->withTrashed()->name('stories.restore');
         Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class)->except('show');
         Route::resource('locations', LocationController::class)->only(['create', 'store']);
     });

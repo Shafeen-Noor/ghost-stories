@@ -1,6 +1,7 @@
 <x-site-layout title="My stories">
     <section class="archive">
         <div class="section-heading"><div><p class="eyebrow">Your corner of the archive</p><h1>My stories</h1></div><a class="button" href="{{ route('userzone.stories.create') }}">Tell a story ↗</a></div>
+        <p><a href="{{ route('userzone.trash.index') }}">View trash</a></p>
         <div class="story-grid">
             @forelse($stories as $story)
                 <x-story-card :story="$story" />

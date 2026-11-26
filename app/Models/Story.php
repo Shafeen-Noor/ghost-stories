@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Story extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = [];
 
@@ -34,7 +35,7 @@ class Story extends Model
         $slug = $base;
         $suffix = 2;
 
-        while (static::where('slug', $slug)->whereKeyNot($this->getKey() ?? 0)->exists()) {
+        while (static::withTrashed()->where('slug', $slug)->whereKeyNot($this->getKey() ?? 0)->exists()) {
             $slug = $base.'-'.$suffix++;
         }
 
