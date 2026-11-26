@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\RegionController;
@@ -38,6 +39,9 @@ require __DIR__.'/auth.php';
  * Userzone routes
  */
 Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
+    Route::resource('collections', CollectionController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+    Route::post('stories/{story}/save', [CollectionController::class, 'save'])->name('collections.save');
+    Route::delete('collections/{collection}/stories/{story}', [CollectionController::class, 'remove'])->name('collections.remove');
     Route::post('user/story-preview', StoryPreviewController::class)->middleware('throttle:60,1')->name('stories.preview');
     Route::post('stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('comments/{comment}/support', [CommentController::class, 'support'])->name('comments.support');

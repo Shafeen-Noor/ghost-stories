@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Comment;
 use App\Models\Location;
+use App\Models\ReadingCollection;
 use App\Models\Story;
 use App\Models\Tag;
 use App\Models\User;
@@ -96,6 +97,8 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
                     'title' => $entry['title'], 'body' => $entry['body'], 'category' => $entry['category'],
                     'author_id' => $owner->id, 'location_id' => $location->id,
                 ]);
+            $collection = $admin->readingCollections()->firstWhere('name', 'Investigate later') ?? ReadingCollection::factory()->create(['user_id' => $admin->id, 'name' => 'Investigate later']);
+            $collection->stories()->syncWithoutDetaching([$story->id]);
             $story->tags()->syncWithoutDetaching([$tags[$index % $tags->count()]->id]);
 
             foreach ($readers as $readerIndex => $reader) {
