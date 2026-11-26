@@ -8,6 +8,7 @@
         <x-story-votes :story="$story" />
         <div class="story-body">{{ $story->body }}</div>
         <aside class="location-note"><p class="eyebrow">The place</p><h2>{{ $story->location->name }}</h2><p>{{ $story->location->description }}</p></aside>
+        <x-comments :story="$story" :comments="$comments" />
         <p class="end-mark" aria-hidden="true">✦</p>
     </article>
 </x-site-layout>

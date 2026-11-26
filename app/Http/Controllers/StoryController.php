@@ -32,6 +32,8 @@ class StoryController extends Controller
             'votes as downvotes_count' => fn (Builder $votes): Builder => $votes->where('value', -1),
         ])->load(['votes' => fn (HasMany $votes): HasMany => $votes->where('user_id', $request->user()?->id)]);
 
-        return view('stories.show', compact('story'));
+        $comments = $story->comments()->where('status', 'visible')->with('author')->latest()->paginate(10, ['*'], 'comments_page');
+
+        return view('stories.show', compact('story', 'comments'));
     }
 }

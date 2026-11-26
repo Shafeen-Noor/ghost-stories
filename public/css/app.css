@@ -121,3 +121,8 @@ textarea { resize: vertical; line-height: 1.8; }
 .location-picker summary { cursor: pointer; font-size: 12px; }
 .location-picker select { max-width: 100%; }
 .location-picker select:disabled { opacity: .6; }
+
+.comments { margin-top: 45px; border-top: 1px solid var(--line); padding-top: 28px; }
+.comment { padding: 20px 0; border-bottom: 1px solid var(--line); }
+.comment time { color: var(--muted); font-size: 11px; margin-left: 15px; }
+.comment-body { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 12px; }

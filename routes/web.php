@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\Userzone\DashboardController;
@@ -26,6 +27,8 @@ require __DIR__.'/auth.php';
  * Userzone routes
  */
 Route::middleware('auth')->group(function () {
+    Route::post('stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('stories/{story}/vote', [VoteController::class, 'store'])->name('stories.vote.store');
     Route::delete('stories/{story}/vote', [VoteController::class, 'destroy'])->name('stories.vote.destroy');
     // For the user's dashboard (after login)
