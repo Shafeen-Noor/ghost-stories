@@ -133,3 +133,6 @@ textarea { resize: vertical; line-height: 1.8; }
 .tags, .tag-choices { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; margin: 12px 0; }
 .tag-choices { padding: 15px; border: 1px solid var(--line); }
 @media(max-width:600px) { .archive-filters { grid-template-columns: 1fr; } }
+
+.archive-stats { display: flex; gap: 30px; flex-wrap: wrap; padding: 10px 0 30px; color: var(--muted); font-size: 12px; }
+.archive-stats strong { color: var(--ink); font-size: 22px; font-family: Georgia, serif; margin-right: 5px; }

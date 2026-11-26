@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ArchiveStatistics;
 use App\Geography;
 use App\Http\Requests\ArchiveRequest;
 use App\Models\Story;
@@ -14,7 +15,7 @@ use Illuminate\View\View;
 
 class StoryController extends Controller
 {
-    public function index(ArchiveRequest $request, Geography $geography): View|RedirectResponse
+    public function index(ArchiveRequest $request, Geography $geography, ArchiveStatistics $statistics): View|RedirectResponse
     {
         if ($request->boolean('reset')) {
             $request->session()->forget('archive.filters');
@@ -31,7 +32,9 @@ class StoryController extends Controller
         $stories = $query->latest()->orderByDesc('id')->paginate(9)->withQueryString();
         $tags = Tag::orderBy('name')->get();
 
-        return view('stories.index', compact('stories', 'filters', 'tags', 'geography'));
+        $stats = $statistics->get();
+
+        return view('stories.index', compact('stories', 'filters', 'tags', 'geography', 'stats'));
     }
 
     public function show(Request $request, Story $story): View

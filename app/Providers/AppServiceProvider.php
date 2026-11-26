@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use App\Geography;
+use App\Models\Story;
+use App\Models\Vote;
+use App\Observers\StoryObserver;
+use App\Observers\VoteObserver;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Story::observe(StoryObserver::class);
+        Vote::observe(VoteObserver::class);
         Paginator::defaultView('components.pagination');
     }
 }

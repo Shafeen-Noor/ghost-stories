@@ -20,6 +20,12 @@
             <span>Somewhere, after midnight.</span>
         </div>
     </section>
+    <div class="archive-stats" aria-label="Archive statistics">
+        <span><strong>{{ $stats['stories'] }}</strong> stories</span>
+        <span><strong>{{ $stats['storytellers'] }}</strong> storytellers</span>
+        <span><strong>{{ $stats['places'] }}</strong> places</span>
+        <span><strong>{{ $stats['votes'] }}</strong> community votes</span>
+    </div>
     <section class="archive">
         <div class="section-heading">
             <div><p class="eyebrow">Keep the lights on</p><h2>The latest whispers</h2></div>
