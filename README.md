@@ -33,6 +33,8 @@ The assessment account is **admin@admin.com**, password **password**. This is th
 
 - Visitors can browse, search, filter and paginate stories; read discussions; and visit place and storyteller pages.
 - Registered users can publish, edit and trash their own stories, restore them, select countries and regions, choose up to five tags, comment, and vote on other people's stories.
+- The editorial interface includes a visual text editor with headings, lists, quotes, links, source mode and a safe server-rendered preview.
+- Authors can choose built-in cover photographs or upload a cover, background and up to six gallery images. Article layout, image focus and daylight, dark or paper reading themes are configurable.
 - A story has one vote per reader. A reader can change or remove their vote. Its truth score is the sum of the votes.
 - Story slugs are unique and remain stable after editing. Trashed stories reserve their slugs for restoration.
 - Administrators can hide or restore stories, moderate comments, suspend readers, edit place descriptions and map coordinates, remove unused places, and manage tags.
@@ -52,6 +54,7 @@ Every application route points to a controller method. Public, authenticated and
 | Shared page frame and presentation | `resources/views/components/site-layout.blade.php` and page views |
 | Database definitions and sample data | `database/migrations`, `database/factories`, `DatabaseSeeder` |
 | Country and region selection | `Geography`, `Location`, `RegionController`, `location-picker` component |
+| Formatted writing and private images | `StoryText`, `StoryMedia`, `StoryPreviewController`, `StoryMediaController` |
 | Shared statistics cache | `ArchiveStatistics`, `StoryObserver`, `VoteObserver` |
 | Account deletion and related records | `ProfileController`, `UserObserver`, and database foreign keys |
 
@@ -73,13 +76,17 @@ The session stores validated archive filters. The reset link clears them. Login 
 | `/stories/{slug}` | Public visible story, votes and comments |
 | `/locations`, `/locations/{id}` | Public place directory and stories |
 | `/users/{id}` | Public storyteller profile, without email or private data |
-| `/dashboard` | Personal campfire and account links |
+| `/dashboard` | Personal dashboard and account links |
 | `/user/stories` | Own stories; full resource CRUD under this prefix |
 | `/user/trash` | Own trashed stories and restoration |
 | `/profile` | Account details, password and account deletion |
 | `/admin` | Administrator moderation |
 
-Place pages embed an OpenStreetMap map when an administrator has supplied both coordinates. The geography selector itself works from bundled data and needs no external API key. Media uploads, email notifications and background queue workers are outside the implemented subset of the original proposal; they are not needed to run the project.
+Place pages embed an OpenStreetMap map when an administrator has supplied both coordinates. The geography selector itself works from bundled data and needs no external API key. Email notifications and background queue workers are outside the implemented subset of the original proposal; they are not needed to run the project.
+
+Uploads accept JPG, PNG or WebP images up to 4 MB each. They are stored on the private local disk and served through a controller that checks story visibility and ownership; no storage symlink is needed. Trashing a story retains its images for restoration. Replacing or removing an image cleans up its file, and permanent account deletion removes the associated files. The default photographs are bundled in `public/images`. Set PHP upload limits above 4 MB per file and allow a request large enough for the selected images (for example, `post_max_size=40M`).
+
+Formatted text uses the existing CommonMark dependency. Raw HTML is escaped and unsafe links are blocked. The visual editor submits Markdown; Source mode allows direct editing, and Preview uses the same renderer as the public article.
 
 ## Tests and build
 
@@ -95,7 +102,7 @@ GitHub Actions runs the PHP tests, formatting and frontend build after each push
 ## A short defence walkthrough
 
 1. Start at the archive; search or filter, open a story, and explain `route → controller → model/query → Blade view`.
-2. Sign in as the seeded admin. Open My campfire and edit the admin-owned story. Follow `StoryRequest`, the ownership policy, `update`, and the redirect with its flash message.
+2. Sign in as the seeded admin. Open Dashboard and edit the admin-owned story. Follow `StoryRequest`, the ownership policy, `update`, and the redirect with its flash message.
 3. Trash and restore the story. Show `deleted_at`, the SoftDeletes trait, and the author-only restore route.
 4. Vote using an ordinary reader. Show the unique vote constraint and the truth-score calculation.
 5. Choose tags and explain the many-to-many pivot; contrast it with the story-to-author and story-to-place foreign keys.
