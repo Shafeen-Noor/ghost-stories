@@ -9,5 +9,4 @@
         <div class="story-grid">@forelse($stories as $story)<x-story-card :story="$story" />@empty<div class="empty-state"><p class="eyebrow">A LITTLE TOO QUIET</p><h3>No stories found.</h3><p>Try a different search, or be the first to share one.</p><a class="button" href="{{ route('stories.index', ['reset' => 1]) }}">Explore all stories ↗</a></div>@endforelse</div>
         {{ $stories->links() }}
     </section>
-    <section class="contribute-banner"><div><p class="eyebrow">YOUR EXPERIENCE BELONGS HERE</p><h2>Got a story<br>you can't explain?</h2></div><div><p>A place. A memory. The part that still gives you chills.<br>Put it into words. Let the community weigh in.</p><a class="button" href="{{ route('userzone.stories.create') }}">Tell your story ↗</a></div></section>
 </x-site-layout>

@@ -1,8 +1,9 @@
-@props(['story'])
+@props(['story', 'compact' => false])
 
 @php($currentVote = $story->votes->first()?->value)
 <div class="story-votes" role="group" aria-label="Votes for {{ $story->title }}">
     <span class="vote-count">Truth score: {{ $story->upvotes_count - $story->downvotes_count }} · {{ $story->upvotes_count }} up · {{ $story->downvotes_count }} down</span>
+    @unless($compact)
     @can('vote', $story)
         <form method="POST" action="{{ route('stories.vote.store', $story) }}">
             @csrf
@@ -23,4 +24,5 @@
             <span class="field-help">You can't vote on your own story.</span>
         @endguest
     @endcan
+    @endunless
 </div>

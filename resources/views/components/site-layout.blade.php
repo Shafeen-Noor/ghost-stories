@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
     <script src="{{ asset('js/editorial.js') }}?v={{ filemtime(public_path('js/editorial.js')) }}" defer></script>
 </head>
-<body @if(request()->routeIs('userzone.stories.create', 'userzone.stories.edit')) class="is-writing" @endif>
+@php($isWriting = request()->routeIs('userzone.stories.create', 'userzone.stories.edit'))
+<body @class(['is-writing' => $isWriting, 'inner-page' => !$isWriting && !request()->routeIs('stories.index')])>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="publication-header">
         <div class="navigation-row">
@@ -28,6 +29,6 @@
         @if(session('status'))<p class="notice" role="status"><span aria-hidden="true">✓</span> {{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>@endif
         {{ $slot }}
     </main>
-    <footer class="publication-footer"><div><a class="footer-brand" href="{{ route('stories.index') }}">UNEX<br>PLAINED.</a><p>Some stories stay with you.<br>These are the ones worth sharing.</p></div><div class="footer-links"><a href="{{ route('stories.index') }}">Read the journal</a><a href="{{ route('locations.index') }}">Explore places</a><a href="{{ route('userzone.stories.create') }}">Share your story</a><small>Independent stories. Open minds.<br>© {{ now()->year }} Unexplained</small></div></footer>
+    <footer class="publication-footer compact-footer"><span>© {{ now()->year }} The Unexplained</span><a href="https://github.com/Shafeen-Noor/ghost-stories">Source code ↗</a></footer>
 </body>
 </html>

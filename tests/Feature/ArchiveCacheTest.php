@@ -48,6 +48,6 @@ it('invalidates the public vote total when a vote is saved or removed', function
 it('does not cache one readers vote controls for another reader', function () {
     $vote = Vote::factory()->create();
 
-    $this->actingAs($vote->user)->get(route('stories.index'))->assertOk()->assertSee('Remove vote');
-    $this->actingAs(User::factory()->create())->get(route('stories.index'))->assertOk()->assertDontSee('Remove vote');
+    $this->actingAs($vote->user)->get(route('stories.show', $vote->story))->assertOk()->assertSee('Remove vote');
+    $this->actingAs(User::factory()->create())->get(route('stories.show', $vote->story))->assertOk()->assertDontSee('Remove vote');
 });

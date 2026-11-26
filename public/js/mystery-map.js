@@ -68,7 +68,7 @@
         const detail = document.querySelector('[data-map-detail]'); if (!detail) return;
         const title=document.createElement('h3'), place=document.createElement('p'), link=document.createElement('a');
         title.textContent=pin.title; place.textContent=pin.place; link.textContent='Read this mystery ↗'; link.href=pin.url; link.className='button'; detail.replaceChildren(title,place,link);
-        document.querySelectorAll('[data-map-story]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mapStory===String(pin.id))));
+        document.querySelectorAll('[data-map-story]').forEach(button=>button.setAttribute('aria-current',String(button.dataset.mapStory===String(pin.id))));
     }
     map.querySelectorAll('[data-map-zoom]').forEach(button => button.addEventListener('click',()=>{ zoom=Math.max(2,Math.min(15,zoom+Number(button.dataset.mapZoom)));render(); }));
     map.querySelector('[data-map-reset]')?.addEventListener('click',()=>{fitPins();render();});
@@ -86,7 +86,7 @@
     map.addEventListener('pointerup',event=>{ if(!drag)return;drag=null;if(picker&&!moved){const rect=map.getBoundingClientRect(),size=256*2**zoom;choosePin(unproject(center.x+(event.clientX-rect.left-map.clientWidth/2)/size,center.y+(event.clientY-rect.top-map.clientHeight/2)/size));}render(); });
     map.addEventListener('pointercancel',()=>{drag=null;render();});
     map.addEventListener('keydown',event=>{if(event.target!==map)return;const step=100/(256*2**zoom);if(event.key==='ArrowLeft')center.x-=step;else if(event.key==='ArrowRight')center.x+=step;else if(event.key==='ArrowUp')center.y-=step;else if(event.key==='ArrowDown')center.y+=step;else if(event.key==='+'||event.key==='=')zoom=Math.min(15,zoom+1);else if(event.key==='-')zoom=Math.max(2,zoom-1);else return;event.preventDefault();render();});
-    document.querySelectorAll('[data-map-story]').forEach(button=>button.addEventListener('click',()=>{const pin=pins.find(p=>String(p.id)===button.dataset.mapStory);if(pin)show(pin);}));
+    document.querySelectorAll('[data-map-story]').forEach(button=>button.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();const pin=pins.find(p=>String(p.id)===button.dataset.mapStory);if(pin)show(pin);}));
     if(picker){const lat=document.querySelector('[name="latitude"]').value,lon=document.querySelector('[name="longitude"]').value;if(lat!==''&&lon!==''){selected={latitude:Number(lat),longitude:Number(lon)};center=project(selected.latitude,selected.longitude);zoom=6;}}
     new ResizeObserver(render).observe(map);render();
 })();

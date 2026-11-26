@@ -8,6 +8,6 @@
     <p class="excerpt">{{ $story->excerpt(150) }}</p>
     <div class="tags">@foreach($story->tags as $tag)<a href="{{ route('stories.index', ['tag' => $tag->id]) }}">#{{ $tag->name }}</a>@endforeach</div>
     <div class="card-bottom"><a class="mini-byline" href="{{ route('authors.show', $story->author) }}"><span class="avatar">{{ mb_substr($story->author->name, 0, 1) }}</span>{{ $story->author->name }}</a><a class="comment-link" href="{{ $storyUrl }}#comments">Comments ↗</a></div>
-    <x-story-votes :story="$story" />
-    <x-story-actions :story="$story" />
+    <x-story-votes :story="$story" :compact="true" />
+    @if($manage)<x-story-actions :story="$story" />@endif
 </article>

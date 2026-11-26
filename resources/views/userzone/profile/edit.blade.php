@@ -1,6 +1,6 @@
 <x-site-layout title="Account settings">
     <section class="form-page">
-        <a class="back-link" href="{{ route('dashboard') }}">← My campfire</a><h1>Account settings</h1>
+        <a class="back-link" href="{{ route('dashboard') }}">← Investigation desk</a><h1>Account settings</h1>
         <h2>Your details</h2>
         <form method="POST" action="{{ route('profile.update') }}">
             @csrf @method('PATCH')
