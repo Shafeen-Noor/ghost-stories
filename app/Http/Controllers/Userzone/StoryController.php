@@ -29,7 +29,7 @@ class StoryController extends Controller
     {
         Gate::authorize('update', $story);
         $story = Story::withVotingFor($request->user())->with(['author', 'location', 'tags'])->findOrFail($story->id);
-        $comments = $story->comments()->where('status', 'visible')->with('author')->latest()->paginate(10, ['*'], 'comments_page');
+        $comments = $story->comments()->where('status', 'visible')->whereNull('parent_id')->withCount('supporters')->with(['author', 'supporters' => fn ($query) => $query->where('users.id', $request->user()?->id), 'replies' => fn ($query) => $query->where('status', 'visible')->with('author')->oldest()])->latest()->paginate(10, ['*'], 'comments_page');
 
         return view('stories.show', compact('story', 'comments'));
     }

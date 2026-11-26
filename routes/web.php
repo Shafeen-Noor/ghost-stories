@@ -40,6 +40,8 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     Route::post('user/story-preview', StoryPreviewController::class)->middleware('throttle:60,1')->name('stories.preview');
     Route::post('stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('comments/{comment}/support', [CommentController::class, 'support'])->name('comments.support');
+    Route::delete('comments/{comment}/support', [CommentController::class, 'support'])->name('comments.unsupport');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('stories/{story}/vote', [VoteController::class, 'store'])->name('stories.vote.store');
     Route::delete('stories/{story}/vote', [VoteController::class, 'destroy'])->name('stories.vote.destroy');

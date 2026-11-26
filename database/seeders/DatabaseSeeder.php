@@ -103,6 +103,12 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
                     Vote::factory()->create(['story_id' => $story->id, 'user_id' => $reader->id, 'value' => $readerIndex === 2 ? -1 : 1]);
                 }
             }
+            foreach (['explanation' => 'Could this be an ordinary sound travelling through the building? A recording at the same time each evening might help.', 'experience' => 'I had a similar experience on a late walk. I cannot explain it, but the sudden silence is what I remember.'] as $kind => $body) {
+                if (! $story->comments()->where('kind', $kind)->exists()) {
+                    $thread = Comment::factory()->create(['story_id' => $story->id, 'author_id' => $readers[1]->id, 'kind' => $kind, 'body' => $body]);
+                    Comment::factory()->create(['story_id' => $story->id, 'author_id' => $readers[2]->id, 'parent_id' => $thread->id, 'body' => 'That is an interesting detail. Was anyone else there at the time?']);
+                }
+            }
             if (! $story->comments()->where('author_id', $readers[0]->id)->exists()) {
                 Comment::factory()->create([
                     'story_id' => $story->id, 'author_id' => $readers[0]->id,
