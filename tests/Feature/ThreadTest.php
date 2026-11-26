@@ -44,3 +44,11 @@ it('keeps replies invisible when their thread is moderated', function () {
     Comment::factory()->create(['story_id' => $root->story_id, 'parent_id' => $root->id, 'body' => 'This must stay inside the hidden thread']);
     $this->get(route('stories.show', $root->story))->assertOk()->assertDontSee('This must stay inside the hidden thread');
 });
+
+it('counts visible replies while excluding replies inside hidden threads', function () {
+    $root = Comment::factory()->create();
+    Comment::factory()->create(['story_id' => $root->story_id, 'parent_id' => $root->id]);
+    $hidden = Comment::factory()->create(['story_id' => $root->story_id, 'status' => 'hidden']);
+    Comment::factory()->create(['story_id' => $root->story_id, 'parent_id' => $hidden->id]);
+    $this->get(route('stories.show', $root->story))->assertOk()->assertViewHas('story', fn ($story) => $story->discussion_count === 2);
+});

@@ -42,7 +42,7 @@
             const data=await response.json();
             if(!dialog.open)return;
             form.querySelector('[data-review-body]').innerHTML=data.html;
-            status.textContent='Ready to review. Publish only when you are happy with it.';reviewed=true;confirm.disabled=false;
+            status.textContent='Ready to review. Confirm only when you are happy with it.';reviewed=true;confirm.disabled=false;
         }catch{status.textContent='Preview could not load. Your writing is still here. Return to editing and try again.';}
     }
     form.querySelector('[data-review-story]').addEventListener('click',review);

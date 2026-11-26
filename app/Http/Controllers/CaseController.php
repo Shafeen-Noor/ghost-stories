@@ -13,13 +13,12 @@ use Illuminate\View\View;
 
 class CaseController extends Controller
 {
-    public function tonight(): RedirectResponse
+    public function tonight(CaseFile $file): RedirectResponse
     {
-        $count = Story::visible()->count();
-        if ($count === 0) {
+        $story = $file->featured();
+        if (! $story) {
             return redirect()->route('stories.index')->with('status', 'The next case is waiting for its first storyteller.');
         }
-        $story = Story::visible()->orderBy('id')->skip(((int) now()->format('z')) % $count)->first();
 
         return redirect()->route('cases.show', $story);
     }

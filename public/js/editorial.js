@@ -124,3 +124,5 @@ document.querySelectorAll('[data-image-input]').forEach(input => {
 });
 
 document.querySelectorAll('.account-menu').forEach(menu => document.addEventListener('click', event => { if (!menu.contains(event.target)) menu.open=false; }));
+
+document.querySelectorAll('.save-story form').forEach(form=>{const select=form.querySelector('[name="collection_id"]'),name=form.querySelector('[name="name"]');select.addEventListener('change',()=>{if(select.value)name.value='';});name.addEventListener('input',()=>{if(name.value.trim())select.value='';});});

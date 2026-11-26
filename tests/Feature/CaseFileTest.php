@@ -4,6 +4,7 @@ use App\CaseFile;
 use App\Models\CaseOpinion;
 use App\Models\Story;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 
 it('reveals account sections sequentially without leaking unopened text', function () {
     $story = Story::factory()->create(['body' => "An opening account.\n\nA concealed second detail.\n\nA final observation."]);
@@ -55,4 +56,15 @@ it('selects a visible featured case and excludes hidden accounts from trails', f
     $this->get(route('cases.tonight'))->assertRedirect();
     $this->get(route('cases.trail', $story))->assertOk()->assertSee($related->title)->assertDontSee($hidden->title);
     expect(app(CaseFile::class)->parts($story))->not->toBeEmpty();
+});
+
+it('keeps tonights case stable when stories are added and replaces it when hidden', function () {
+    Cache::forget('cases.featured.'.now()->toDateString());
+    Story::factory()->count(2)->create();
+    $file = app(CaseFile::class);
+    $first = $file->featured();
+    Story::factory()->create();
+    expect($file->featured()->id)->toBe($first->id);
+    $first->update(['status' => 'hidden']);
+    expect($file->featured()->id)->not->toBe($first->id);
 });

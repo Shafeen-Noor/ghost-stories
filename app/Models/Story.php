@@ -152,6 +152,12 @@ class Story extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function visibleComments(): HasMany
+    {
+        return $this->comments()->where('status', 'visible')->where(fn (Builder $query): Builder => $query->whereNull('parent_id')
+            ->orWhereHas('parent', fn (Builder $parent): Builder => $parent->where('status', 'visible')));
+    }
+
     public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
