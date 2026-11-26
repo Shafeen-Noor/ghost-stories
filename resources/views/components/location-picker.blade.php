@@ -50,5 +50,5 @@
     <noscript><p class="field-help">You can save a country without choosing a region. Enable JavaScript to load regions when you change countries.</p></noscript>
 </fieldset>
 @once
-    <script src="{{ asset('js/location-picker.js') }}" defer></script>
+    <script src="{{ asset('js/location-picker.js') }}?v={{ filemtime(public_path('js/location-picker.js')) }}" defer></script>
 @endonce

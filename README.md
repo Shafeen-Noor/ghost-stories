@@ -33,12 +33,15 @@ The assessment account is **admin@admin.com**, password **password**. This is th
 
 - Visitors can browse, search, filter and paginate stories; read discussions; and visit place and storyteller pages.
 - Registered users can publish, edit and trash their own stories, restore them, select countries and regions, choose up to five tags, comment, and vote on other people's stories.
+- Tonight’s case opens an account in sequential sections. Readers choose an interpretation before seeing community poll results. Each user has one changeable opinion per story, tied to the current text revision. Editing the account resets reveal progress and seals results until the revised account has been read. The featured story ID is cached until the end of the day; a hidden or trashed selection is replaced.
+- Related mystery trails connect visible accounts by shared category, place or tags, without claiming the events have a common cause.
+- The investigation desk shows saved cases and new visible comments since the previous visit, using the session. Reading room provides a quieter article layout and text size controls.
 - The editorial interface includes a visual text editor with headings, lists, quotes, links, source mode and a safe server-rendered preview.
 - The compact writer keeps essential details beside the editor. Authors can attach up to six photographs and optionally choose an approximate map pin. Cover and atmosphere controls have been removed from the writing form. Existing image data remains intact when editing.
 - Preview & publish opens a full review with the title, author, location, formatted text and photos. Nothing is written to the database until Publish story is confirmed.
 - The mystery map supports panning, zooming, clickable stories and category/country filters. Country-only stories are not assigned invented coordinates. The four fictional demo places use explicitly illustrative city positions.
 - Surprise me opens a random visible mystery and remembers the last discovery in the session to avoid immediate repeats when possible.
-- Discussions support possible explanations, related encounters and replies. Readers can give one removable convincing vote to another reader's explanation. Moderated threads do not expose their replies.
+- Discussions use a simple comment composer and support replies. Older explanation and encounter labels remain readable. Readers can give one removable convincing vote to another reader's explanation. Moderated threads do not expose their replies.
 - Private saved collections let readers group, rename and remove bookmarks. Removing a collection never deletes its stories.
 - A story has one vote per reader. A reader can change or remove their vote. Its truth score is the sum of the votes.
 - Story slugs are unique and remain stable after editing. Trashed stories reserve their slugs for restoration.
@@ -63,7 +66,7 @@ Every application route points to a controller method. Public, authenticated and
 | Shared statistics cache | `ArchiveStatistics`, `StoryObserver`, `VoteObserver` |
 | Account deletion and related records | `ProfileController`, `UserObserver`, and database foreign keys |
 
-The seven models are User, Location, Story, Vote, Comment, Tag and ReadingCollection. Every model has a migration and factory, and every factory is used in the seeder. Users have many stories and comments; places have many stories; stories have many votes and comments. Story and Tag use the `story_tag` pivot for a many-to-many relationship. The unique `(story_id, user_id)` constraint prevents duplicate votes.
+The eight models are User, Location, Story, Vote, Comment, Tag, ReadingCollection and CaseOpinion. Every model has a migration and factory, and every factory is used in the seeder. Users have many stories and comments; places have many stories; stories have many votes and comments. Story and Tag use the `story_tag` pivot for a many-to-many relationship. The unique `(story_id, user_id)` constraint prevents duplicate votes.
 
 ## Cache, soft deletion and session state
 
@@ -79,6 +82,7 @@ The session stores validated archive filters. The reset link clears them. Login 
 | --- | --- |
 | `/` → `/stories` | Public home and archive |
 | `/stories/{slug}` | Public visible story, votes and comments |
+| `/tonight`, `/cases/{slug}`, `/trails/{slug}` | Public case files and connected accounts; voting requires login |
 | `/map`, `/discover` | Public interactive atlas and random discovery |
 | `/collections`, `/collections/{id}` | Private saved lists for their owner |
 | `/locations`, `/locations/{id}` | Public place directory and stories |
@@ -120,3 +124,9 @@ GitHub Actions runs the PHP tests, formatting and frontend build after each push
 8. Open moderation and run a targeted feature test. The tests also cover seeding and the required admin login.
 
 For the investigation workflow, open the map, select a story, compare explanations, add an encounter or reply, and save it to a private collection. Explain the self-referencing Comment relationship, the comment_user endorsement pivot, and the ReadingCollection-to-Story pivot. The preview endpoint renders text without saving any story.
+
+## Manual QA
+
+Manually exercised in Chrome: featured case reveals, sealed poll and persistence after reload, ordinary reader login with invalid/valid credentials, switching story votes, public/owner controls, rich text escaping, real image attachment and publication, editing while retaining its slug and photograph, private collections and duplicate saving, investigation desk, reading room, map filters and mobile layouts.
+
+Fixed issues found during that pass: sticky sidebar controls hidden behind navigation; comments counted without their replies; tonight’s selection changing when a story was added; conflicting collection name/selection inputs; filtered map pins outside the initial viewport; and stale browser scripts after an update. Public CSS and JavaScript URLs now include their file modification version. Collection errors stay expanded with old input, and list counts now use the correct singular/plural. Detailed map tiles require connectivity; the bundled world outline and pins remain available without them. Password reset delivery, destructive account deletion and physical-device testing were not part of this browser pass.

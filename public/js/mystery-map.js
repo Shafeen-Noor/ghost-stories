@@ -12,6 +12,7 @@
     let drag;
     let moved = false;
     let selected;
+    let fitted=false;
     let frame;
     const tileCache = new Map();
     function project(lat, lon) {
@@ -21,8 +22,20 @@
     function unproject(x, y) {
         return {latitude: Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180 / Math.PI, longitude: ((x * 360 - 180 + 540) % 360) - 180};
     }
+    function fitPins() {
+        if(!pins.length){zoom=3;center=project(30,5);return;}
+        const points=pins.map(pin=>project(pin.latitude,pin.longitude));
+        const anchor=points[0].x;
+        points.forEach(point=>{while(point.x-anchor>.5)point.x-=1;while(point.x-anchor<-.5)point.x+=1;});
+        const xs=points.map(p=>p.x),ys=points.map(p=>p.y);
+        const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+        center={x:(minX+maxX)/2,y:(minY+maxY)/2};
+        const scale=Math.min(Math.max(80,map.clientWidth-140)/Math.max(.01,maxX-minX),Math.max(80,map.clientHeight-160)/Math.max(.01,maxY-minY));
+        zoom=Math.max(2,Math.min(7,Math.floor(Math.log2(scale/256))));
+    }
     function render() {
         if(!map.clientWidth || !map.clientHeight)return;
+        if(!picker&&!fitted){fitPins();fitted=true;}
         center.y = Math.max(0, Math.min(1, center.y)); center.x = (center.x + 1) % 1;
         const n = 2 ** zoom, size = n * 256;
         const left = center.x * size - map.clientWidth / 2, top = center.y * size - map.clientHeight / 2;
@@ -58,7 +71,7 @@
         document.querySelectorAll('[data-map-story]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mapStory===String(pin.id))));
     }
     map.querySelectorAll('[data-map-zoom]').forEach(button => button.addEventListener('click',()=>{ zoom=Math.max(2,Math.min(15,zoom+Number(button.dataset.mapZoom)));render(); }));
-    map.querySelector('[data-map-reset]')?.addEventListener('click',()=>{zoom=4;center=project(30,5);render();});
+    map.querySelector('[data-map-reset]')?.addEventListener('click',()=>{fitPins();render();});
     function choosePin(point) {
         selected=point;
         document.querySelector('[name="latitude"]').value=point.latitude.toFixed(6);

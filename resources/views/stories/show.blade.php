@@ -13,4 +13,4 @@
             <x-comments :story="$story" :comments="$comments" />
         </div><aside class="reading-sidebar"><x-save-story :story="$story" /><p class="eyebrow">BELIEVE IT OR DOUBT IT</p><h2>Your call.</h2><p>The community's truth score. One reader, one vote.</p><x-story-votes :story="$story" /><a class="sidebar-comment" href="#comments">Read & write comments <span>↗</span></a><div class="location-note"><p class="eyebrow">THE PLACE</p><h3><a href="{{ route('locations.show', $story->location) }}">{{ $story->location->name }}</a></h3><p>{{ $story->location->description }}</p></div><div class="tags">@foreach($story->tags as $tag)<a href="{{ route('stories.index', ['tag' => $tag->id]) }}">#{{ $tag->name }}</a>@endforeach</div><x-story-actions :story="$story" /></aside></div></div>
     </article>
-<script src="{{ asset('js/reading-room.js') }}" defer></script></x-site-layout>
+<script src="{{ asset('js/reading-room.js') }}?v={{ filemtime(public_path('js/reading-room.js')) }}" defer></script></x-site-layout>

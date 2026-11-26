@@ -18,7 +18,7 @@
             <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
             <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.1/dist/cdn.min.js"></script>
         @endif
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
     </head>
     <body>
         <div class="auth-screen">
