@@ -1,21 +1,24 @@
-<x-form-textinput name="title" label="Story title" :required="true" :value="$story->title ?? ''" maxlength="255" autofocus />
-<x-location-picker :geography="$geography" :locations="$locations" :location="$story->location ?? null" />
-    <div class="field">
-        <label for="category">Category</label>
-        <select name="category" id="category" required>
-            <option value="ghost" @selected(old('category', $story->category ?? 'ghost') === 'ghost')>Ghost story</option>
-            <option value="urban_legend" @selected(old('category', $story->category ?? 'ghost') === 'urban_legend')>Urban legend</option>
-            <option value="conspiracy" @selected(old('category', $story->category ?? 'ghost') === 'conspiracy')>Conspiracy</option>
-        </select>
-        @error('category')<p class="error">{{ $message }}</p>@enderror
+<div class="writer-grid">
+    <div class="writer-content"><x-form-textinput name="title" label="Story title" :required="true" :value="$story->title ?? ''" maxlength="255" autofocus placeholder="Give your story a great headline..." /><x-story-editor :value="$story->body ?? ''" />
+        <details class="editor-help"><summary>A few things that make a great story</summary><p>Start with a place and a moment. Add the details you remember. Be honest about what you know—and what you don't. Use headings, quotes and images to give the story room to breathe.</p></details>
     </div>
-<x-form-textarea name="body" label="Your story" :value="$story->body ?? ''" :required="true" minlength="20" maxlength="30000" placeholder="It started when…" />
-
-@php($selectedTags = old('tags', isset($story) ? $story->tags->modelKeys() : []))
-<fieldset class="tag-choices"><legend>Tags (up to five)</legend>
-    @foreach($tags as $tag)
-        <label><input type="checkbox" name="tags[]" value="{{ $tag->id }}" @checked(in_array($tag->id, is_array($selectedTags) ? $selectedTags : []))> {{ $tag->name }}</label>
-    @endforeach
-    @error('tags')<p class="error">{{ $message }}</p>@enderror
-    @error('tags.*')<p class="error">{{ $message }}</p>@enderror
-</fieldset>
+    <aside class="writer-settings" aria-label="Story settings">
+        <section class="settings-panel"><div class="panel-heading"><span class="step-number">01</span><h2>The essentials</h2></div><div class="field"><label for="category">Category</label><select name="category" id="category" required>@foreach(['ghost' => 'Ghost story', 'urban_legend' => 'Urban legend', 'conspiracy' => 'Conspiracy'] as $code => $name)<option value="{{ $code }}" @selected(old('category', $story->category ?? 'ghost') === $code)>{{ $name }}</option>@endforeach</select>@error('category')<p class="error">{{ $message }}</p>@enderror</div><x-location-picker :geography="$geography" :locations="$locations" :location="$story->location ?? null" />
+        @php($selectedTags = old('tags', isset($story) ? $story->tags->modelKeys() : []))<fieldset class="tag-choices"><legend>Tags <small>Choose up to five</small></legend>@foreach($tags as $tag)<label><input type="checkbox" name="tags[]" value="{{ $tag->id }}" @checked(in_array($tag->id, is_array($selectedTags) ? $selectedTags : []))><span>{{ $tag->name }}</span></label>@endforeach @error('tags')<p class="error">{{ $message }}</p>@enderror @error('tags.*')<p class="error">{{ $message }}</p>@enderror</fieldset></section>
+        <section class="settings-panel"><div class="panel-heading"><span class="step-number">02</span><h2>Cover image</h2></div><p class="field-help">Choose a photograph, or make it your own.</p><div class="cover-presets">@foreach(['auto' => 'Automatic', 'house' => 'The house', 'station' => 'After hours', 'coast' => 'The coast'] as $code => $label)<label><input type="radio" name="cover_preset" value="{{ $code }}" @checked(old('cover_preset', $story->cover_preset ?? 'auto') === $code)><span><img src="{{ asset('images/'.($code === 'auto' ? 'house' : $code).'.jpg') }}" alt="" loading="lazy">{{ $label }}</span></label>@endforeach</div>
+            <label class="upload-zone" for="cover_image"><span class="upload-icon">↥</span><strong>Upload your own cover</strong><small>JPG, PNG or WebP · up to 4 MB</small><input id="cover_image" name="cover_image" type="file" accept="image/jpeg,image/png,image/webp" data-image-input></label><div class="upload-previews" data-preview-for="cover_image"></div>
+            @if(isset($story) && $story->cover_path)<div class="existing-image"><img src="{{ $story->coverUrl() }}" alt="Current cover"><label><input type="checkbox" name="remove_cover" value="1"> Remove uploaded cover</label></div>@endif
+            @error('cover_image')<p class="error">{{ $message }}</p>@enderror @error('cover_preset')<p class="error">{{ $message }}</p>@enderror
+            <div class="field"><label for="cover_position">Image focus</label><select name="cover_position" id="cover_position">@foreach(['center' => 'Centre', 'top' => 'Top', 'bottom' => 'Bottom'] as $code => $name)<option value="{{ $code }}" @selected(old('cover_position', $story->cover_position ?? 'center') === $code)>{{ $name }}</option>@endforeach</select>@error('cover_position')<p class="error">{{ $message }}</p>@enderror</div>
+        </section>
+        <details class="settings-panel" open><summary class="panel-heading"><span class="step-number">03</span><h2>Style & atmosphere</h2><span>⌄</span></summary>
+            <div class="field"><label for="cover_layout">Article layout</label><select name="cover_layout" id="cover_layout"><option value="split" @selected(old('cover_layout', $story->cover_layout ?? 'split') === 'split')>Editorial · side-by-side</option><option value="full" @selected(old('cover_layout', $story->cover_layout ?? 'split') === 'full')>Immersive · full-width image</option></select>@error('cover_layout')<p class="error">{{ $message }}</p>@enderror</div>
+            <fieldset class="theme-choices"><legend>Reading theme</legend>@foreach(['light' => 'Daylight', 'dark' => 'After dark', 'sepia' => 'Old paper'] as $code => $label)<label class="theme-choice theme-swatch-{{ $code }}"><input type="radio" name="reading_theme" value="{{ $code }}" @checked(old('reading_theme', $story->reading_theme ?? 'light') === $code)><span>Aa<small>{{ $label }}</small></span></label>@endforeach @error('reading_theme')<p class="error">{{ $message }}</p>@enderror</fieldset>
+            <div class="field"><label for="backdrop">Header background</label><select name="backdrop" id="backdrop">@foreach(['none' => 'Clean white', 'cover' => 'Use the cover image', 'house' => 'House in the mist', 'station' => 'Empty station', 'coast' => 'Quiet coast'] as $code => $label)<option value="{{ $code }}" @selected(old('backdrop', $story->backdrop ?? 'none') === $code)>{{ $label }}</option>@endforeach</select>@error('backdrop')<p class="error">{{ $message }}</p>@enderror</div>
+            <label class="small-upload" for="background_image">Or upload a background image<input id="background_image" type="file" name="background_image" accept="image/jpeg,image/png,image/webp" data-image-input></label><div class="upload-previews" data-preview-for="background_image"></div>@if(isset($story) && $story->background_path)<label class="checkbox"><input type="checkbox" name="remove_background" value="1"> Remove current background image</label>@endif @error('background_image')<p class="error">{{ $message }}</p>@enderror
+        </details>
+        <details class="settings-panel"><summary class="panel-heading"><span class="step-number">04</span><h2>Photo gallery</h2><span>+</span></summary><p class="field-help">Add up to six photographs to accompany your story. Click a published photo to see it full size.</p><label class="small-upload" for="gallery">Choose photos<input id="gallery" name="gallery[]" type="file" multiple accept="image/jpeg,image/png,image/webp" data-image-input></label><div class="upload-previews" data-preview-for="gallery"></div>@error('gallery')<p class="error">{{ $message }}</p>@enderror @error('gallery.*')<p class="error">{{ $message }}</p>@enderror
+            @if(isset($story))<div class="existing-gallery">@foreach($story->gallery_paths ?? [] as $index => $path)<label><img src="{{ route('stories.media', [$story, 'gallery-'.$index]) }}" alt="Gallery photograph {{ $index + 1 }}"><span><input type="checkbox" name="remove_gallery[]" value="{{ $index }}"> Remove photo {{ $index + 1 }}</span></label>@endforeach</div>@endif
+        </details>
+    </aside>
+</div>

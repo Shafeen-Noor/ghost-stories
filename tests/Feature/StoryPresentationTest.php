@@ -98,3 +98,12 @@ it('requires authentication and validates editor previews', function () {
     $this->postJson(route('stories.preview'), ['body' => 'Text'])->assertUnauthorized();
     $this->actingAs(User::factory()->create())->postJson(route('stories.preview'), ['body' => str_repeat('a', 30001)])->assertUnprocessable();
 });
+
+it('renders formatted story content on its public page', function () {
+    $story = Story::factory()->create(['body' => "## The hallway\n\n**The knocking never stopped.**\n\n<script>alert(1)</script>"]);
+
+    $this->get(route('stories.show', $story))->assertOk()
+        ->assertSee('<h2>The hallway</h2>', false)
+        ->assertSee('<strong>The knocking never stopped.</strong>', false)
+        ->assertDontSee('<script>alert(1)</script>', false);
+});

@@ -1,52 +1,17 @@
-<x-site-layout title="Stories">
-    <section class="hero">
-        <div>
-            <p class="eyebrow">An archive of the unexplained</p>
-            <h1>Every place has a story.<br><em>Some never leave you.</em></h1>
-            <p class="intro">Empty houses. The last train home. A light where there shouldn't be one. Read the stories people bring back.</p>
-            <a class="button" href="{{ route('userzone.stories.create') }}">Tell your story <span aria-hidden="true">↗</span></a>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-            <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="188" cy="88" r="64" fill="#e6dec9"/>
-                <path d="M35 290V140L88 84l53 56v150M17 155l71-78 70 78" fill="#233a32" stroke="#a9b6a0" stroke-width="2"/>
-                <path d="M62 290V228q26-42 52 0v62" fill="#101e1b"/>
-                <path d="M64 148h18v30H64zm31 0h18v30H95z" fill="#d4b574"/>
-                <path d="M252 301V78m0 65-32-41m32 77 27-44m-27 86-40-40" fill="none" stroke="#71826b" stroke-width="5"/>
-                <path d="M17 295q120-17 265 7M22 315q135-16 250 4" fill="none" stroke="#71826b" stroke-width="2"/>
-                <path d="M158 253v-47a19 19 0 0 1 38 0v47l-10-7-9 7-9-7z" fill="#e7e6d9"/>
-                <circle cx="171" cy="211" r="2.5" fill="#233a32"/><circle cx="183" cy="211" r="2.5" fill="#233a32"/>
-            </svg>
-            <span>Somewhere, after midnight.</span>
-        </div>
-    </section>
-    <div class="archive-stats" aria-label="Archive statistics">
-        <span><strong>{{ $stats['stories'] }}</strong> stories</span>
-        <span><strong>{{ $stats['storytellers'] }}</strong> storytellers</span>
-        <span><strong>{{ $stats['places'] }}</strong> places</span>
-        <span><strong>{{ $stats['votes'] }}</strong> community votes</span>
-    </div>
-    <section class="archive">
-        <div class="section-heading">
-            <div><p class="eyebrow">Keep the lights on</p><h2>The latest whispers</h2></div>
-            <span class="story-count">{{ $stories->total() }} {{ Str::plural('story', $stories->total()) }}</span>
-        </div>
-        <form method="GET" action="{{ route('stories.index') }}" class="archive-filters">
-            <div class="field"><label for="q">Search stories</label><input name="q" id="q" value="{{ $filters['q'] }}" maxlength="80" placeholder="A title or a memory"></div>
-            <div class="field"><label for="category">Category</label><select name="category" id="category"><option value="">All categories</option>@foreach(['ghost', 'urban_legend', 'conspiracy'] as $category)<option value="{{ $category }}" @selected($filters['category'] === $category)>{{ Str::headline($category) }}</option>@endforeach</select></div>
-            <div class="field"><label for="tag">Tag</label><select name="tag" id="tag"><option value="">All tags</option>@foreach($tags as $tag)<option value="{{ $tag->id }}" @selected($filters['tag'] == $tag->id)>{{ $tag->name }}</option>@endforeach</select></div>
-            <div class="field"><label for="country">Country</label><select name="country" id="country"><option value="">All countries</option>@foreach($geography->countries() as $code => $name)<option value="{{ $code }}" @selected($filters['country'] === $code)>{{ $name }}</option>@endforeach</select></div>
-            <div class="field"><label for="sort">Sort by</label><select name="sort" id="sort"><option value="latest" @selected($filters['sort'] === 'latest')>Latest</option><option value="score" @selected($filters['sort'] === 'score')>Most vouched</option></select></div>
-            <div class="form-actions"><button>Find stories</button><a href="{{ route('stories.index', ['reset' => 1]) }}">Reset filters</a></div>
-        </form>
+<x-site-layout title="The journal">
+    @if($stories->count() && $stories->currentPage() === 1 && !array_filter(Arr::except($filters, 'sort')))
+        @php($lead = $stories->first())
+        <section class="lead-story" aria-label="Featured story">
+            <a class="lead-image" href="{{ route('stories.show', $lead) }}"><img src="{{ $lead->coverUrl() }}" alt="Cover of {{ $lead->title }}" fetchpriority="high" style="object-position: {{ $lead->cover_position }}"><span class="image-label">THE STORY TO READ TONIGHT ↗</span></a>
+            <div class="lead-copy"><p class="eyebrow"><span class="category">{{ Str::headline($lead->category) }}</span> / {{ $lead->readingMinutes() }} MIN READ</p><h1><a href="{{ route('stories.show', $lead) }}">{{ $lead->title }}</a></h1><p class="lead-excerpt">{{ $lead->excerpt(230) }}</p><div class="byline"><span class="avatar">{{ mb_substr($lead->author->name, 0, 1) }}</span><div><a href="{{ route('authors.show', $lead->author) }}">{{ $lead->author->name }}</a><small>{{ $lead->created_at->format('F j, Y') }} · {{ $lead->location->name }}</small></div></div><a class="text-link" href="{{ route('stories.show', $lead) }}">Read the story <span>↗</span></a></div>
+        </section>
+    @endif
+    <section class="archive" id="archive-search">
+        <div class="section-heading"><div><p class="eyebrow">STRANGE PLACES. REAL VOICES.</p><h2>The journal<span class="accent-dot">.</span></h2></div><span class="story-count">{{ $stories->total() }} {{ Str::plural('story', $stories->total()) }} / {{ $stats['storytellers'] }} storytellers</span></div>
+        <div class="archive-controls"><nav class="category-tabs" aria-label="Story categories"><a href="{{ route('stories.index', ['reset' => 1]) }}" @class(['active' => !$filters['category']])>All stories</a>@foreach(['ghost' => 'Ghost stories', 'urban_legend' => 'Urban legends', 'conspiracy' => 'Conspiracies'] as $value => $label)<a href="{{ route('stories.index', ['category' => $value]) }}" @class(['active' => $filters['category'] === $value])>{{ $label }}</a>@endforeach</nav><details class="filter-drawer" @if(array_filter(Arr::except($filters, 'sort'))) open @endif><summary>Search & filters <span aria-hidden="true">+</span></summary><form method="GET" action="{{ route('stories.index') }}" class="archive-filters"><div class="field"><label for="q">Search stories</label><input name="q" id="q" value="{{ $filters['q'] }}" maxlength="80" placeholder="Search a title or a memory..."></div><div class="field"><label for="category">Category</label><select name="category" id="category"><option value="">All categories</option>@foreach(['ghost', 'urban_legend', 'conspiracy'] as $category)<option value="{{ $category }}" @selected($filters['category'] === $category)>{{ Str::headline($category) }}</option>@endforeach</select></div><div class="field"><label for="tag">Tag</label><select name="tag" id="tag"><option value="">All tags</option>@foreach($tags as $tag)<option value="{{ $tag->id }}" @selected($filters['tag'] == $tag->id)>{{ $tag->name }}</option>@endforeach</select></div><div class="field"><label for="country">Country</label><select name="country" id="country"><option value="">All countries</option>@foreach($geography->countries() as $code => $name)<option value="{{ $code }}" @selected($filters['country'] === $code)>{{ $name }}</option>@endforeach</select></div><div class="field"><label for="sort">Sort by</label><select name="sort" id="sort"><option value="latest" @selected($filters['sort'] === 'latest')>Latest</option><option value="score" @selected($filters['sort'] === 'score')>Most vouched</option></select></div><div class="form-actions"><button>Find stories ↗</button><a href="{{ route('stories.index', ['reset' => 1]) }}">Reset filters</a></div></form></details></div>
         @foreach($errors->all() as $error)<p class="error">{{ $error }}</p>@endforeach
-        <div class="story-grid">
-            @forelse($stories as $story)
-                <x-story-card :story="$story" />
-            @empty
-                <div class="empty-state"><h3>A quiet night. For now.</h3><p>No stories yet. Be the first to share one.</p></div>
-            @endforelse
-        </div>
+        <div class="story-grid">@forelse($stories as $story)<x-story-card :story="$story" />@empty<div class="empty-state"><p class="eyebrow">A LITTLE TOO QUIET</p><h3>No stories found.</h3><p>Try a different search, or be the first to share one.</p><a class="button" href="{{ route('stories.index', ['reset' => 1]) }}">Explore all stories ↗</a></div>@endforelse</div>
         {{ $stories->links() }}
     </section>
+    <section class="contribute-banner"><div><p class="eyebrow">YOUR EXPERIENCE BELONGS HERE</p><h2>Got a story<br>you can't explain?</h2></div><div><p>A place. A memory. The part that still gives you chills.<br>Put it into words. Let the community weigh in.</p><a class="button" href="{{ route('userzone.stories.create') }}">Tell your story ↗</a></div></section>
 </x-site-layout>

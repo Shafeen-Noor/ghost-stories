@@ -19,7 +19,7 @@ it('gives duplicate titles different URLs', function () {
     expect($first->slug)->toBe('the-empty-house');
     expect($second->slug)->toBe('the-empty-house-2');
     expect($third->slug)->toBe('the-empty-house-3');
-    $this->get(route('stories.show', $second))->assertOk()->assertSee($second->body);
+    $this->get(route('stories.show', $second))->assertOk()->assertSee(explode("\n\n", $second->body)[0]);
 });
 
 it('keeps the original URL when a story is renamed', function () {

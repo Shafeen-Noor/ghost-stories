@@ -1,16 +1,16 @@
 <x-site-layout :title="$story->title">
-    <article class="story-page">
-        <a class="back-link" href="{{ route('stories.index') }}">← All stories</a>
-        <p class="eyebrow">{{ Str::headline($story->category) }} · {{ $story->location->name }}</p>
+    <article class="story-article layout-{{ $story->cover_layout }}">
+        <div class="article-breadcrumb"><a href="{{ route('stories.index') }}">← The journal</a><span>{{ Str::headline($story->category) }}</span><a href="#comments">{{ $comments->total() }} {{ Str::plural('comment', $comments->total()) }} ↓</a></div>
         @if($story->status !== 'visible')<p class="notice">This story is hidden from the public archive. This is your private preview.</p>@endif
-        <h1>{{ $story->title }}</h1>
-        <p class="story-meta">Told by <a href="{{ route('authors.show', $story->author) }}">{{ $story->author->name }}</a> · <time datetime="{{ $story->created_at->toDateString() }}">{{ $story->created_at->format('F j, Y') }}</time></p>
-        <div class="tags">@foreach($story->tags as $tag)<a href="{{ route('stories.index', ['tag' => $tag->id]) }}">#{{ $tag->name }}</a>@endforeach</div>
-        <x-story-actions :story="$story" />
-        <x-story-votes :story="$story" />
-        <div class="story-body">{{ $story->body }}</div>
-        <aside class="location-note"><p class="eyebrow">The place</p><h2><a href="{{ route('locations.show', $story->location) }}">{{ $story->location->name }}</a></h2><p>{{ $story->location->description }}</p></aside>
-        <x-comments :story="$story" :comments="$comments" />
-        <p class="end-mark" aria-hidden="true">✦</p>
+        <header class="article-hero @if($story->backgroundUrl()) has-backdrop @endif" @if($story->backgroundUrl()) style="--story-backdrop: url('{{ $story->backgroundUrl() }}')" @endif>
+            <div class="article-headline"><p class="eyebrow">{{ $story->location->name }} / {{ $story->readingMinutes() }} MIN READ</p><h1>{{ $story->title }}</h1><div class="byline"><span class="avatar">{{ mb_substr($story->author->name, 0, 1) }}</span><div><a href="{{ route('authors.show', $story->author) }}">{{ $story->author->name }}</a><small>{{ $story->created_at->format('F j, Y') }}</small></div></div><div class="form-actions"><a class="button" href="#read-story">Read story ↓</a><a class="text-link" href="#comments">Join the conversation ↗</a></div></div>
+            <figure class="article-cover"><img src="{{ $story->coverUrl() }}" alt="Cover of {{ $story->title }}" style="object-position: {{ $story->cover_position }}" fetchpriority="high"></figure>
+        </header>
+        <div class="reading-surface theme-{{ $story->reading_theme }}" id="read-story"><div class="article-grid"><div>
+            <div class="story-body prose">{!! app(\App\StoryText::class)->render($story->body) !!}</div>
+            @if($story->gallery_paths)<section class="story-gallery" aria-label="Story photographs">@foreach($story->gallery_paths as $index => $path)<a href="{{ route('stories.media', [$story, 'gallery-'.$index]) }}" target="_blank" rel="noopener"><img src="{{ route('stories.media', [$story, 'gallery-'.$index]) }}" alt="Photograph {{ $index + 1 }} for {{ $story->title }}" loading="lazy"></a>@endforeach</section>@endif
+            <div class="article-end"><span>END OF STORY / OPEN TO INTERPRETATION</span><span aria-hidden="true">✳</span></div>
+            <x-comments :story="$story" :comments="$comments" />
+        </div><aside class="reading-sidebar"><p class="eyebrow">BELIEVE IT OR DOUBT IT</p><h2>Your call.</h2><p>The community's truth score. One reader, one vote.</p><x-story-votes :story="$story" /><a class="sidebar-comment" href="#comments">Read & write comments <span>↗</span></a><div class="location-note"><p class="eyebrow">THE PLACE</p><h3><a href="{{ route('locations.show', $story->location) }}">{{ $story->location->name }}</a></h3><p>{{ $story->location->description }}</p></div><div class="tags">@foreach($story->tags as $tag)<a href="{{ route('stories.index', ['tag' => $tag->id]) }}">#{{ $tag->name }}</a>@endforeach</div><x-story-actions :story="$story" /></aside></div></div>
     </article>
 </x-site-layout>

@@ -29,7 +29,7 @@ it('shows an authors public stories without exposing private account data', func
 it('lets authors preview a hidden story through their complete story resource', function () {
     $story = Story::factory()->create(['status' => 'hidden']);
 
-    $this->actingAs($story->author)->get(route('userzone.stories.show', $story))->assertOk()->assertSee('private preview')->assertSee($story->body);
+    $this->actingAs($story->author)->get(route('userzone.stories.show', $story))->assertOk()->assertSee('private preview')->assertSee(explode("\n\n", $story->body)[0]);
     $this->actingAs(User::factory()->create())->get(route('userzone.stories.show', $story))->assertForbidden();
     $this->get(route('stories.show', $story))->assertNotFound();
 });

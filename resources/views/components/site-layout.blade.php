@@ -1,39 +1,33 @@
-@props(['title' => 'Ghost Stories'])
+@props(['title' => 'The journal'])
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} | Ghost Stories</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=editorial-1">
+    <script src="{{ asset('js/editorial.js') }}" defer></script>
 </head>
 <body>
-    <header class="site-header">
-        <a class="brand" href="{{ route('welcome') }}"><svg aria-hidden="true" viewBox="0 0 30 38" fill="none"><path d="M3 34V15a12 12 0 0 1 24 0v19l-6-4-6 4-6-4z" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="16" r="1.4" fill="currentColor"/><circle cx="19" cy="16" r="1.4" fill="currentColor"/></svg>Ghost Stories</a>
-        <nav aria-label="Main navigation">
-            <a href="{{ route('locations.index') }}">Places</a>
-            @can('admin')<a href="{{ route('admin.dashboard') }}">Moderation</a>@endcan
-            @auth
-                <a href="{{ route('stories.index') }}">The archive</a>
-                <a href="{{ route('dashboard') }}">My campfire</a>
-                <a href="{{ route('userzone.stories.create') }}">Tell a story ↗</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="text-button" type="submit">Log out</button>
-                </form>
-            @else
-                <a href="{{ route('stories.index') }}">The archive</a>
-                <a href="{{ route('login') }}">Log in</a>
-                <a href="{{ route('register') }}">Register</a>
-            @endauth
-        </nav>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="publication-header">
+        <div class="utility-bar"><span><i class="live-dot" aria-hidden="true"></i> AN INDEPENDENT JOURNAL OF THE UNEXPLAINED</span><span>{{ now()->format('l, F j, Y') }}</span></div>
+        <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Ghost Stories home">GHOST STORIES<span class="masthead-star" aria-hidden="true">✳</span></a></div>
+        <div class="navigation-row">
+            <nav aria-label="Main navigation"><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('stories.index', ['sort' => 'score']) }}">Most vouched ↗</a></nav>
+            <div class="navigation-actions">
+                @auth
+                    <a class="write-link" href="{{ route('userzone.stories.create') }}">Write a story <span aria-hidden="true">↗</span></a>
+                    <details class="account-menu"><summary><span class="avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span class="account-label">My account</span><span aria-hidden="true">⌄</span></summary><div class="account-dropdown"><strong>{{ auth()->user()->name }}</strong><a href="{{ route('dashboard') }}">Dashboard</a><a href="{{ route('userzone.stories.index') }}">My stories</a><a href="{{ route('userzone.trash.index') }}">Trash</a><a href="{{ route('profile.edit') }}">Account settings</a>@can('admin')<a href="{{ route('admin.dashboard') }}">Moderation</a>@endcan<form method="POST" action="{{ route('logout') }}">@csrf<button class="text-button">Log out</button></form></div></details>
+                @else
+                    <a href="{{ route('login') }}">Log in</a><a class="write-link" href="{{ route('register') }}">Join the journal ↗</a>
+                @endauth
+            </div>
+        </div>
     </header>
-    <main>
-        @if(session('status'))
-            <p class="notice" role="status">{{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>
-        @endif
+    <main id="main-content">
+        @if(session('status'))<p class="notice" role="status"><span aria-hidden="true">✓</span> {{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>@endif
         {{ $slot }}
     </main>
-    <footer><span>For the things we can't quite explain.</span><small>Read slowly. Leave a light on.</small></footer>
+    <footer class="publication-footer"><div><a class="footer-brand" href="{{ route('stories.index') }}">GHOST<br>STORIES.</a><p>Some stories stay with you.<br>These are the ones worth sharing.</p></div><div class="footer-links"><a href="{{ route('stories.index') }}">Read the journal</a><a href="{{ route('locations.index') }}">Explore places</a><a href="{{ route('userzone.stories.create') }}">Share your story</a><small>Independent stories. Open minds.<br>© {{ now()->year }} Ghost Stories</small></div></footer>
 </body>
 </html>

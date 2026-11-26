@@ -1,0 +1,11 @@
+@props(['value' => ''])
+@php($body = is_string(old('body', $value)) ? old('body', $value) : '')
+<div class="story-editor" data-preview-url="{{ route('stories.preview') }}">
+    <div class="editor-top"><label for="body">Your story</label><div class="editor-modes" role="group" aria-label="Editor mode"><button type="button" data-mode="write" aria-pressed="true">Write</button><button type="button" data-mode="source" aria-pressed="false">Source</button><button type="button" data-mode="preview" aria-pressed="false">Preview ↗</button></div></div>
+    <div class="editor-toolbar" role="toolbar" aria-label="Text formatting"><button type="button" data-command="bold" aria-label="Bold" title="Bold (Ctrl or Cmd+B)"><b>B</b></button><button type="button" data-command="italic" aria-label="Italic"><i>I</i></button><span></span><button type="button" data-command="heading" aria-label="Heading">H2</button><button type="button" data-command="quote" aria-label="Block quote">❝</button><button type="button" data-command="insertUnorderedList" aria-label="Bulleted list">• List</button><button type="button" data-command="insertOrderedList" aria-label="Numbered list">1. List</button><span></span><button type="button" data-command="link" aria-label="Insert link">Link ↗</button><button type="button" data-command="image" aria-label="Insert image from a URL">Image +</button><button type="button" data-command="removeFormat" aria-label="Clear formatting">Tx</button><button type="button" data-command="undo" aria-label="Undo">↶</button><button type="button" data-command="redo" aria-label="Redo">↷</button></div>
+    <textarea id="body" name="body" rows="18" required minlength="20" maxlength="30000" data-editor-source placeholder="Start with the moment you still can't explain...">{{ $body }}</textarea>
+    <div class="rich-editor prose" contenteditable="true" role="textbox" aria-label="Your story" aria-multiline="true" data-rich-editor hidden>{!! app(\App\StoryText::class)->render(is_string($body) ? $body : '') !!}</div>
+    <div class="editor-preview prose" data-editor-preview hidden></div>
+    <div class="editor-bottom"><span data-word-count>0 words</span><span data-editor-status role="status">Use the toolbar to bring your story to life.</span></div>
+    @error('body')<p class="error">{{ $message }}</p>@enderror
+</div>
