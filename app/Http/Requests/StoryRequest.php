@@ -6,6 +6,7 @@ use App\Geography;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoryRequest extends FormRequest
 {
@@ -30,6 +31,19 @@ class StoryRequest extends FormRequest
         $regions = is_string($country) ? app(Geography::class)->regions($country) : [];
 
         return [
+            'cover_preset' => ['nullable', 'string', Rule::in(['auto', 'house', 'station', 'coast'])],
+            'backdrop' => ['nullable', 'string', Rule::in(['none', 'cover', 'house', 'station', 'coast'])],
+            'reading_theme' => ['nullable', 'string', Rule::in(['light', 'dark', 'sepia'])],
+            'cover_layout' => ['nullable', 'string', Rule::in(['split', 'full'])],
+            'cover_position' => ['nullable', 'string', Rule::in(['top', 'center', 'bottom'])],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096', 'dimensions:max_width=8000,max_height=8000'],
+            'background_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096', 'dimensions:max_width=8000,max_height=8000'],
+            'gallery' => ['nullable', 'array', 'max:6'],
+            'gallery.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096', 'dimensions:max_width=8000,max_height=8000'],
+            'remove_cover' => ['nullable', 'boolean'],
+            'remove_background' => ['nullable', 'boolean'],
+            'remove_gallery' => ['nullable', 'array', 'max:6'],
+            'remove_gallery.*' => ['integer', 'distinct', 'min:0', 'max:5'],
             'tags' => ['nullable', 'array', 'max:5'],
             'tags.*' => ['integer', 'distinct', 'exists:tags,id'],
             'title' => ['required', 'string', 'min:3', 'max:255'],
@@ -39,5 +53,20 @@ class StoryRequest extends FormRequest
             'country_code' => ['nullable', 'required_without:location_id', 'string', Rule::in(array_keys(app(Geography::class)->countries()))],
             'region_code' => ['nullable', 'string', Rule::prohibitedIf($this->filled('location_id')), Rule::in(array_keys($regions))],
         ];
+    }
+
+    /** @return array<\Closure> */
+    public function after(): array
+    {
+        return [function (Validator $validator): void {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+            $existing = $this->route('story')?->gallery_paths ?? [];
+            $remaining = array_diff_key($existing, array_flip((array) $this->input('remove_gallery', [])));
+            if (count($remaining) + count($this->file('gallery', [])) > 6) {
+                $validator->errors()->add('gallery', 'Keep up to six gallery images. Remove an existing image before adding another.');
+            }
+        }];
     }
 }

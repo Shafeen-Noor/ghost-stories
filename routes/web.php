@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\StoryMediaController;
+use App\Http\Controllers\StoryPreviewController;
 use App\Http\Controllers\Userzone\DashboardController;
 use App\Http\Controllers\Userzone\LocationController;
 use App\Http\Controllers\Userzone\ProfileController;
@@ -20,6 +22,7 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/', WelcomeController::class)->name('welcome');
 
+Route::get('stories/{story}/media/{asset}', StoryMediaController::class)->where('asset', 'cover|background|gallery-[0-5]')->name('stories.media');
 Route::resource('stories', StoryController::class)->only(['index', 'show']);
 Route::resource('locations', App\Http\Controllers\LocationController::class)->only(['index', 'show']);
 Route::get('users/{user}', [AuthorController::class, 'show'])->name('authors.show');
@@ -33,6 +36,7 @@ require __DIR__.'/auth.php';
  * Userzone routes
  */
 Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
+    Route::post('user/story-preview', StoryPreviewController::class)->middleware('throttle:60,1')->name('stories.preview');
     Route::post('stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('stories/{story}/vote', [VoteController::class, 'store'])->name('stories.vote.store');

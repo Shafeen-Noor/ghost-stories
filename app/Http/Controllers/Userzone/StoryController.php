@@ -8,10 +8,13 @@ use App\Http\Requests\StoryRequest;
 use App\Models\Location;
 use App\Models\Story;
 use App\Models\Tag;
+use App\StoryMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
+use Throwable;
 
 class StoryController extends Controller
 {
@@ -41,8 +44,7 @@ class StoryController extends Controller
 
     public function store(StoryRequest $request): RedirectResponse
     {
-        $story = $request->user()->stories()->create($this->storyAttributes($request));
-        $story->tags()->sync($request->validated('tags', []));
+        $story = $this->saveStory($request);
 
         return redirect()->route('stories.show', $story)->with('status', 'Your story is now out in the world.');
     }
@@ -59,8 +61,7 @@ class StoryController extends Controller
 
     public function update(StoryRequest $request, Story $story): RedirectResponse
     {
-        $story->update($this->storyAttributes($request));
-        $story->tags()->sync($request->validated('tags', []));
+        $this->saveStory($request, $story);
 
         return redirect()->route('userzone.stories.index')->with('status', 'Your story has been updated.');
     }
@@ -74,6 +75,31 @@ class StoryController extends Controller
         return redirect()->route('userzone.stories.index')->with('status', 'Your story was moved to the trash. You can restore it.');
     }
 
+    private function saveStory(StoryRequest $request, ?Story $story = null): Story
+    {
+        $media = new StoryMedia;
+        try {
+            $saved = DB::transaction(function () use ($request, $story, $media): Story {
+                $attributes = $this->storyAttributes($request);
+                if ($story === null) {
+                    $story = $request->user()->stories()->create($attributes);
+                } else {
+                    $story->fill($attributes);
+                }
+                $media->apply($story, $request);
+                $story->tags()->sync($request->validated('tags', []));
+
+                return $story;
+            });
+        } catch (Throwable $exception) {
+            $media->cleanUp(false);
+            throw $exception;
+        }
+        $media->cleanUp(true);
+
+        return $saved;
+    }
+
     /** @return array<string, mixed> */
     private function storyAttributes(StoryRequest $request): array
     {
@@ -85,7 +111,12 @@ class StoryController extends Controller
             )->id;
         }
 
-        unset($validated['country_code'], $validated['region_code'], $validated['tags']);
+        unset($validated['country_code'], $validated['region_code'], $validated['tags'], $validated['cover_image'], $validated['background_image'], $validated['gallery'], $validated['remove_cover'], $validated['remove_background'], $validated['remove_gallery']);
+        foreach (['cover_preset', 'backdrop', 'reading_theme', 'cover_layout', 'cover_position'] as $option) {
+            if (array_key_exists($option, $validated) && $validated[$option] === null) {
+                unset($validated[$option]);
+            }
+        }
 
         return $validated;
     }

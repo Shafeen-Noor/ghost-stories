@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\StoryText;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,56 @@ class Story extends Model
                 $story->slug = $story->slugify();
             }
         });
+    }
+
+    protected function casts(): array
+    {
+        return ['gallery_paths' => 'array'];
+    }
+
+    public function coverUrl(): string
+    {
+        if ($this->cover_path) {
+            return route('stories.media', [$this, 'cover']);
+        }
+        $preset = $this->cover_preset;
+        if (! in_array($preset, ['house', 'station', 'coast'], true)) {
+            $preset = ['house', 'station', 'coast'][max(0, ($this->id ?? 1) - 1) % 3];
+        }
+
+        return asset('images/'.$preset.'.jpg');
+    }
+
+    public function backgroundUrl(): ?string
+    {
+        if ($this->background_path) {
+            return route('stories.media', [$this, 'background']);
+        }
+        if ($this->backdrop === 'cover') {
+            return $this->coverUrl();
+        }
+
+        return in_array($this->backdrop, ['house', 'station', 'coast'], true) ? asset('images/'.$this->backdrop.'.jpg') : null;
+    }
+
+    public function mediaPath(string $asset): ?string
+    {
+        return match (true) {
+            $asset === 'cover' => $this->cover_path,
+            $asset === 'background' => $this->background_path,
+            preg_match('/^gallery-([0-5])$/', $asset, $matches) === 1 => ($this->gallery_paths ?? [])[(int) $matches[1]] ?? null,
+            default => null,
+        };
+    }
+
+    public function excerpt(int $length = 160): string
+    {
+        return app(StoryText::class)->excerpt($this->body, $length);
+    }
+
+    public function readingMinutes(): int
+    {
+        return max(1, (int) ceil(str_word_count(strip_tags(app(StoryText::class)->render($this->body))) / 200));
     }
 
     public function getRouteKeyName(): string
