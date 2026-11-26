@@ -4,7 +4,7 @@
         <p><a href="{{ route('userzone.trash.index') }}">View trash</a></p>
         <div class="story-grid">
             @forelse($stories as $story)
-                <x-story-card :story="$story" />
+                <x-story-card :story="$story" :manage="true" />
             @empty
                 <div class="empty-state"><h2>Every storyteller starts somewhere.</h2><p>You haven't shared a story yet.</p><a href="{{ route('userzone.stories.create') }}">Write your first story →</a></div>
             @endforelse

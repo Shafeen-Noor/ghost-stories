@@ -136,3 +136,7 @@ textarea { resize: vertical; line-height: 1.8; }
 
 .archive-stats { display: flex; gap: 30px; flex-wrap: wrap; padding: 10px 0 30px; color: var(--muted); font-size: 12px; }
 .archive-stats strong { color: var(--ink); font-size: 22px; font-family: Georgia, serif; margin-right: 5px; }
+
+.place-map { width: 100%; height: 320px; border: 1px solid var(--line); margin: 20px 0 5px; }
+.archive .form-actions { flex-wrap: wrap; margin-bottom: 30px; }
+.archive .story-grid { margin-top: 25px; }

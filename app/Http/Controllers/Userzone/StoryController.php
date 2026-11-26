@@ -22,6 +22,15 @@ class StoryController extends Controller
         return view('userzone.stories.index', compact('stories'));
     }
 
+    public function show(Request $request, Story $story): View
+    {
+        Gate::authorize('update', $story);
+        $story = Story::withVotingFor($request->user())->with(['author', 'location', 'tags'])->findOrFail($story->id);
+        $comments = $story->comments()->where('status', 'visible')->with('author')->latest()->paginate(10, ['*'], 'comments_page');
+
+        return view('stories.show', compact('story', 'comments'));
+    }
+
     public function create(Geography $geography): View
     {
         $locations = Location::orderBy('name')->get();

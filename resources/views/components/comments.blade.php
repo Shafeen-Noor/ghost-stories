@@ -18,6 +18,7 @@
         <p>No comments yet. What do you think happened?</p>
     @endforelse
     {{ $comments->links() }}
+    @if($story->status === 'visible')
     @auth
         <form method="POST" action="{{ route('comments.store', $story) }}">
             @csrf
@@ -27,4 +28,5 @@
     @else
         <p><a href="{{ route('login') }}">Log in</a> to join the conversation.</p>
     @endauth
+    @endif
 </section>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoryController;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', WelcomeController::class)->name('welcome');
 
 Route::resource('stories', StoryController::class)->only(['index', 'show']);
+Route::resource('locations', App\Http\Controllers\LocationController::class)->only(['index', 'show']);
+Route::get('users/{user}', [AuthorController::class, 'show'])->name('authors.show');
 
 /*
  * Authentication routes
@@ -39,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('user')->name('userzone.')->group(function () {
         Route::get('trash', [TrashController::class, 'index'])->name('trash.index');
         Route::patch('stories/{story}/restore', [TrashController::class, 'restore'])->withTrashed()->name('stories.restore');
-        Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class)->except('show');
+        Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class);
         Route::resource('locations', LocationController::class)->only(['create', 'store']);
     });
 

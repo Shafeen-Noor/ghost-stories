@@ -1,17 +1,8 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Dashboard
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    You're logged in!
-                </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+<x-site-layout title="Your campfire">
+    <section class="archive">
+        <p class="eyebrow">Your campfire</p><h1>Welcome, {{ $user->name }}.</h1>
+        <p>{{ $published }} public stories · {{ $trashed }} stories in the trash</p>
+        <div class="form-actions"><a class="button" href="{{ route('userzone.stories.create') }}">Tell a story</a><a href="{{ route('userzone.stories.index') }}">My stories</a><a href="{{ route('userzone.trash.index') }}">Trash</a><a href="{{ route('profile.edit') }}">Account settings</a><a href="{{ route('authors.show', $user) }}">Public profile</a></div>
+        <h2>Your latest stories</h2><div class="story-grid">@forelse($stories as $story)<x-story-card :story="$story" :manage="true" />@empty<p>Your first story starts here.</p>@endforelse</div>
+    </section>
+</x-site-layout>
