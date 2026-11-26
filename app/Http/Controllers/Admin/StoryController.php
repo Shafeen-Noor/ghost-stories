@@ -12,7 +12,7 @@ class StoryController extends Controller
 {
     public function update(Request $request, Story $story): RedirectResponse
     {
-        $story->update($request->validate(['status' => ['required', Rule::in(['visible', 'hidden'])]]));
+        $story->update($request->validate(['status' => ['required', 'string', Rule::in(['visible', 'hidden'])]]));
 
         return back()->with('status', 'Story visibility updated.');
     }

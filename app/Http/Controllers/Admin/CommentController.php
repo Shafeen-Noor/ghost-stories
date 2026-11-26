@@ -12,7 +12,7 @@ class CommentController extends Controller
 {
     public function update(Request $request, Comment $comment): RedirectResponse
     {
-        $comment->update($request->validate(['status' => ['required', Rule::in(['visible', 'hidden'])]]));
+        $comment->update($request->validate(['status' => ['required', 'string', Rule::in(['visible', 'hidden'])]]));
 
         return back()->with('status', 'Comment visibility updated.');
     }

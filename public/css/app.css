@@ -153,3 +153,5 @@ textarea { resize: vertical; line-height: 1.8; }
 
 .account-section { margin-top: 40px; padding-top: 25px; border-top: 1px solid var(--line); }
 .account-section summary { cursor: pointer; color: #963b32; }
+
+.text-button { border: 0; border-radius: 0; }

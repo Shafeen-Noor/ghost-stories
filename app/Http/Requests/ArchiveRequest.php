@@ -17,10 +17,10 @@ class ArchiveRequest extends FormRequest
     {
         return [
             'q' => ['nullable', 'string', 'max:80'],
-            'category' => ['nullable', Rule::in(['ghost', 'urban_legend', 'conspiracy'])],
+            'category' => ['nullable', 'string', Rule::in(['ghost', 'urban_legend', 'conspiracy'])],
             'tag' => ['nullable', 'integer', 'exists:tags,id'],
-            'country' => ['nullable', Rule::in(array_keys(app(Geography::class)->countries()))],
-            'sort' => ['nullable', Rule::in(['latest', 'score'])],
+            'country' => ['nullable', 'string', Rule::in(array_keys(app(Geography::class)->countries()))],
+            'sort' => ['nullable', 'string', Rule::in(['latest', 'score'])],
             'reset' => ['nullable', 'boolean'],
             'page' => ['nullable', 'integer', 'min:1', 'max:100000'],
         ];
