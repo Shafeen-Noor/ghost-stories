@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} | Unexplained</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=discovery-3">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=discovery-4">
     <script src="{{ asset('js/editorial.js') }}" defer></script>
 </head>
 <body @if(request()->routeIs('userzone.stories.create', 'userzone.stories.edit')) class="is-writing" @endif>

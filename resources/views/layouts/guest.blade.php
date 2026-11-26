@@ -22,7 +22,7 @@
     </head>
     <body>
         <div class="auth-screen">
-            <a class="brand" href="{{ route('stories.index') }}">Ghost Stories</a>
+            <a class="brand" href="{{ route('stories.index') }}">Unexplained</a>
             <div class="auth-box">
                 <p class="eyebrow">A circle of storytellers</p>
                 <h1>Gather around.</h1>

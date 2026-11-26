@@ -5,6 +5,8 @@
     const picker = map.hasAttribute('data-map-picker');
     const tiles = map.querySelector('.map-tiles');
     const markers = map.querySelector('.map-pins');
+    const land = document.createElement('div');land.className='map-land';land.setAttribute('aria-hidden','true');map.prepend(land);
+    const worlds=[-1,0,1].map(offset=>{const image=document.createElement('img');image.src='/images/world.svg';image.alt='';image.draggable=false;land.append(image);return {image,offset};});
     let zoom = picker ? 3 : 4;
     let center = project(30, 5);
     let drag;
@@ -24,6 +26,7 @@
         center.y = Math.max(0, Math.min(1, center.y)); center.x = (center.x + 1) % 1;
         const n = 2 ** zoom, size = n * 256;
         const left = center.x * size - map.clientWidth / 2, top = center.y * size - map.clientHeight / 2;
+        worlds.forEach(({image,offset})=>{image.style.width=size+'px';image.style.height=size+'px';image.style.transform=`translate(${offset*size-left}px,${-top}px)`;});
         const visible = new Set();
         for (let y = Math.floor(top / 256); y <= Math.floor((top + map.clientHeight) / 256); y++) {
             if (y < 0 || y >= n) continue;
@@ -31,7 +34,7 @@
                 const wrappedX = ((x % n) + n) % n;
                 const key = `${zoom}/${x}/${y}`; visible.add(key);
                 let image = tileCache.get(key);
-                if (!image) { image = document.createElement('img'); image.alt=''; image.draggable=false; image.src=`https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`; tileCache.set(key,image); tiles.append(image); }
+                if (!image) { image = document.createElement('img'); image.alt=''; image.draggable=false; image.src=`https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`;image.addEventListener('error',()=>{const hint=map.querySelector('.map-hint');if(hint)hint.textContent='Base map shown · story pins still work';}); tileCache.set(key,image); tiles.append(image); }
                 image.style.transform=`translate(${Math.round(x * 256 - left)}px,${Math.round(y * 256 - top)}px)`;
             }
         }

@@ -1,6 +1,6 @@
-# Ghost Stories
+# Unexplained
 
-A community archive for ghost stories, urban legends and unexplained experiences about places. Built with PHP 8.5, Laravel 13, Blade and SQLite, using the teacher's [starter pack](https://github.com/ndeblauw/starterpack) and translating the concepts from [blaug](https://github.com/ndeblauw/blaug) into a story archive.
+A community atlas for folklore, conspiracy theories, ghost stories and unexplained experiences. Readers follow mysteries on a map, compare explanations, and add their own encounters. The repository and local Herd domain retain the original ghost-stories name. Built with PHP 8.5, Laravel 13, Blade and SQLite, using the teacher's [starter pack](https://github.com/ndeblauw/starterpack) and translating the concepts from [blaug](https://github.com/ndeblauw/blaug) into a story archive.
 
 ## Fresh installation
 
@@ -34,7 +34,12 @@ The assessment account is **admin@admin.com**, password **password**. This is th
 - Visitors can browse, search, filter and paginate stories; read discussions; and visit place and storyteller pages.
 - Registered users can publish, edit and trash their own stories, restore them, select countries and regions, choose up to five tags, comment, and vote on other people's stories.
 - The editorial interface includes a visual text editor with headings, lists, quotes, links, source mode and a safe server-rendered preview.
-- Authors can choose built-in cover photographs or upload a cover, background and up to six gallery images. Article layout, image focus and daylight, dark or paper reading themes are configurable.
+- The compact writer keeps essential details beside the editor. Authors can attach up to six photographs and optionally choose an approximate map pin. Cover and atmosphere controls have been removed from the writing form. Existing image data remains intact when editing.
+- Preview & publish opens a full review with the title, author, location, formatted text and photos. Nothing is written to the database until Publish story is confirmed.
+- The mystery map supports panning, zooming, clickable stories and category/country filters. Country-only stories are not assigned invented coordinates. The four fictional demo places use explicitly illustrative city positions.
+- Surprise me opens a random visible mystery and remembers the last discovery in the session to avoid immediate repeats when possible.
+- Discussions support possible explanations, related encounters and replies. Readers can give one removable convincing vote to another reader's explanation. Moderated threads do not expose their replies.
+- Private saved collections let readers group, rename and remove bookmarks. Removing a collection never deletes its stories.
 - A story has one vote per reader. A reader can change or remove their vote. Its truth score is the sum of the votes.
 - Story slugs are unique and remain stable after editing. Trashed stories reserve their slugs for restoration.
 - Administrators can hide or restore stories, moderate comments, suspend readers, edit place descriptions and map coordinates, remove unused places, and manage tags.
@@ -58,7 +63,7 @@ Every application route points to a controller method. Public, authenticated and
 | Shared statistics cache | `ArchiveStatistics`, `StoryObserver`, `VoteObserver` |
 | Account deletion and related records | `ProfileController`, `UserObserver`, and database foreign keys |
 
-The six models are User, Location, Story, Vote, Comment and Tag. Every model has a migration and factory, and every factory is used in the seeder. Users have many stories and comments; places have many stories; stories have many votes and comments. Story and Tag use the `story_tag` pivot for a many-to-many relationship. The unique `(story_id, user_id)` constraint prevents duplicate votes.
+The seven models are User, Location, Story, Vote, Comment, Tag and ReadingCollection. Every model has a migration and factory, and every factory is used in the seeder. Users have many stories and comments; places have many stories; stories have many votes and comments. Story and Tag use the `story_tag` pivot for a many-to-many relationship. The unique `(story_id, user_id)` constraint prevents duplicate votes.
 
 ## Cache, soft deletion and session state
 
@@ -74,6 +79,8 @@ The session stores validated archive filters. The reset link clears them. Login 
 | --- | --- |
 | `/` → `/stories` | Public home and archive |
 | `/stories/{slug}` | Public visible story, votes and comments |
+| `/map`, `/discover` | Public interactive atlas and random discovery |
+| `/collections`, `/collections/{id}` | Private saved lists for their owner |
 | `/locations`, `/locations/{id}` | Public place directory and stories |
 | `/users/{id}` | Public storyteller profile, without email or private data |
 | `/dashboard` | Personal dashboard and account links |
@@ -81,6 +88,8 @@ The session stores validated archive filters. The reset link clears them. Login 
 | `/user/trash` | Own trashed stories and restoration |
 | `/profile` | Account details, password and account deletion |
 | `/admin` | Administrator moderation |
+
+The atlas uses a small first-party pan/zoom script rather than an additional JavaScript dependency. Detailed street tiles come from [OpenStreetMap](https://www.openstreetmap.org/copyright), with visible attribution. A bundled Mercator land outline derived from the public-domain [Natural Earth 110m land dataset](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson) keeps the background and pins usable when tiles are slow or unavailable.
 
 Place pages embed an OpenStreetMap map when an administrator has supplied both coordinates. The geography selector itself works from bundled data and needs no external API key. Email notifications and background queue workers are outside the implemented subset of the original proposal; they are not needed to run the project.
 
@@ -109,3 +118,5 @@ GitHub Actions runs the PHP tests, formatting and frontend build after each push
 6. Show `ArchiveStatistics` and its observers. Explain why vote controls are not shared in the cache.
 7. Show the remembered search filters in `ArchiveRequest`, then reset them.
 8. Open moderation and run a targeted feature test. The tests also cover seeding and the required admin login.
+
+For the investigation workflow, open the map, select a story, compare explanations, add an encounter or reply, and save it to a private collection. Explain the self-referencing Comment relationship, the comment_user endorsement pivot, and the ReadingCollection-to-Story pivot. The preview endpoint renders text without saving any story.
