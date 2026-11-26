@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CaseOpinion;
 use App\Models\Comment;
 use App\Models\Location;
 use App\Models\ReadingCollection;
@@ -103,6 +104,11 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
                 ]);
             $collection = $admin->readingCollections()->firstWhere('name', 'Investigate later') ?? ReadingCollection::factory()->create(['user_id' => $admin->id, 'name' => 'Investigate later']);
             $collection->stories()->syncWithoutDetaching([$story->id]);
+            foreach ($readers as $readerIndex => $reader) {
+                if (! $story->caseOpinions()->where('user_id', $reader->id)->exists()) {
+                    CaseOpinion::factory()->create(['story_id' => $story->id, 'user_id' => $reader->id, 'choice' => array_keys(CaseOpinion::CHOICES)[$readerIndex], 'revision' => sha1($story->body)]);
+                }
+            }
             $story->tags()->syncWithoutDetaching([$tags[$index % $tags->count()]->id]);
 
             foreach ($readers as $readerIndex => $reader) {

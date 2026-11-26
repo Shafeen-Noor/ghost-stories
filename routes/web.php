@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\CaseController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscoveryController;
@@ -26,6 +27,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', WelcomeController::class)->name('welcome');
 
 Route::get('stories/{story}/media/{asset}', StoryMediaController::class)->where('asset', 'cover|background|gallery-[0-5]')->name('stories.media');
+Route::get('tonight', [CaseController::class, 'tonight'])->name('cases.tonight');
+Route::get('cases/{story}', [CaseController::class, 'show'])->name('cases.show');
+Route::post('cases/{story}/reveal', [CaseController::class, 'reveal'])->middleware('throttle:60,1')->name('cases.reveal');
+Route::get('trails/{story}', [CaseController::class, 'trail'])->name('cases.trail');
 Route::get('map', MysteryMapController::class)->name('discovery.map');
 Route::get('discover', [DiscoveryController::class, 'random'])->name('discovery.random');
 Route::resource('stories', StoryController::class)->only(['index', 'show']);
@@ -41,6 +46,7 @@ require __DIR__.'/auth.php';
  * Userzone routes
  */
 Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
+    Route::post('cases/{story}/opinion', [CaseController::class, 'opinion'])->middleware('throttle:30,1')->name('cases.opinion');
     Route::resource('collections', CollectionController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
     Route::post('stories/{story}/save', [CollectionController::class, 'save'])->name('collections.save');
     Route::delete('collections/{collection}/stories/{story}', [CollectionController::class, 'remove'])->name('collections.remove');

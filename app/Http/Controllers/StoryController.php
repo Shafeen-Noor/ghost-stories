@@ -33,8 +33,10 @@ class StoryController extends Controller
         $tags = Tag::orderBy('name')->get();
 
         $stats = $statistics->get();
+        $caseCount = Story::visible()->count();
+        $tonight = $caseCount ? Story::visible()->with(['author', 'location'])->orderBy('id')->skip(((int) now()->format('z')) % $caseCount)->first() : null;
 
-        return view('stories.index', compact('stories', 'filters', 'tags', 'geography', 'stats'));
+        return view('stories.index', compact('stories', 'filters', 'tags', 'geography', 'stats', 'tonight'));
     }
 
     public function show(Request $request, Story $story): View

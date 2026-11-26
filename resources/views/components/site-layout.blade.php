@@ -4,14 +4,14 @@
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} | Unexplained</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=discovery-4">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=case-files-1">
     <script src="{{ asset('js/editorial.js') }}" defer></script>
 </head>
 <body @if(request()->routeIs('userzone.stories.create', 'userzone.stories.edit')) class="is-writing" @endif>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="publication-header">
         <div class="navigation-row">
-            <nav aria-label="Main navigation"><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('discovery.map') }}" @if(request()->routeIs('discovery.map')) aria-current="page" @endif>Mystery map</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('discovery.random') }}">Surprise me ↗</a></nav>
+            <nav aria-label="Main navigation"><a href="{{ route('cases.tonight') }}">Tonight’s case</a><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('discovery.map') }}" @if(request()->routeIs('discovery.map')) aria-current="page" @endif>Mystery map</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('discovery.random') }}">Surprise me ↗</a></nav>
             <div class="navigation-actions">
                 @auth
                     <a class="write-link" href="{{ route('userzone.stories.create') }}">Write a story <span aria-hidden="true">↗</span></a>
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="utility-bar"><span><i class="live-dot" aria-hidden="true"></i> AN INDEPENDENT JOURNAL OF THE UNEXPLAINED</span><span>{{ now()->format('l, F j, Y') }}</span></div>
-        <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Unexplained home">UNEXPLAINED<span class="masthead-star" aria-hidden="true">✳</span></a></div>
+        <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Unexplained home">The Unexplained<span class="masthead-star" aria-hidden="true">✳</span></a></div>
     </header>
     <main id="main-content">
         @if(session('status'))<p class="notice" role="status"><span aria-hidden="true">✓</span> {{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>@endif

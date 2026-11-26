@@ -1,10 +1,6 @@
 <x-site-layout title="The journal">
-    @if($stories->count() && $stories->currentPage() === 1 && !array_filter(Arr::except($filters, 'sort')))
-        @php($lead = $stories->first())
-        <section class="lead-story" aria-label="Featured story">
-            <a class="lead-image" href="{{ route('stories.show', $lead) }}"><img src="{{ $lead->coverUrl() }}" alt="Cover of {{ $lead->title }}" fetchpriority="high" style="object-position: {{ $lead->cover_position }}"><span class="image-label">THE STORY TO READ TONIGHT ↗</span></a>
-            <div class="lead-copy"><p class="eyebrow"><span class="category">{{ Str::headline($lead->category) }}</span> / {{ $lead->readingMinutes() }} MIN READ</p><h1><a href="{{ route('stories.show', $lead) }}">{{ $lead->title }}</a></h1><p class="lead-excerpt">{{ $lead->excerpt(230) }}</p><div class="byline"><span class="avatar">{{ mb_substr($lead->author->name, 0, 1) }}</span><div><a href="{{ route('authors.show', $lead->author) }}">{{ $lead->author->name }}</a><small>{{ $lead->created_at->format('F j, Y') }} · {{ $lead->location->name }}</small></div></div><a class="text-link" href="{{ route('stories.show', $lead) }}">Read the story <span>↗</span></a></div>
-        </section>
+    @if($tonight && $stories->currentPage() === 1 && !array_filter(Arr::except($filters, 'sort')))
+    <section class="tonight-feature" aria-label="Tonight's mystery"><div><p class="eyebrow">TONIGHT'S MYSTERY · A NEW PERSPECTIVE EVERY DAY</p><h1>{{ $tonight->title }}</h1><p class="tonight-deck">An account from {{ $tonight->location->name }}.<br>Unfold the details. Choose your interpretation.<br>Then discover what everyone else thinks.</p><a class="button" href="{{ route('cases.show', $tonight) }}">Open tonight's case ↗</a><p class="field-help">{{ $tonight->readingMinutes() }} minute read · No answer key. An open mind required.</p></div><a class="tonight-image" href="{{ route('cases.show', $tonight) }}"><img src="{{ $tonight->coverUrl() }}" alt="Atmospheric illustration for tonight's mystery" fetchpriority="high"><span>CASE {{ str_pad($tonight->id, 4, '0', STR_PAD_LEFT) }} / UNFOLD THE ACCOUNT</span></a></section>
     @endif
     <section class="archive" id="archive-search">
         <div class="section-heading"><div><p class="eyebrow">STRANGE PLACES. REAL VOICES.</p><h2>The journal<span class="accent-dot">.</span></h2></div><span class="story-count">{{ $stories->total() }} {{ Str::plural('story', $stories->total()) }} / {{ $stats['storytellers'] }} storytellers</span></div>

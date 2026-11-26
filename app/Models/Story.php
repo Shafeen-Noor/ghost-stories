@@ -129,6 +129,24 @@ class Story extends Model
         }
     }
 
+    public function caseOpinions(): HasMany
+    {
+        return $this->hasMany(CaseOpinion::class);
+    }
+
+    public function readingCollections(): BelongsToMany
+    {
+        return $this->belongsToMany(ReadingCollection::class);
+    }
+
+    public function scopeRelatedTo(Builder $query, Story $story): void
+    {
+        $query->whereKeyNot($story->id)->where(function (Builder $related) use ($story): void {
+            $related->where('location_id', $story->location_id)->orWhere('category', $story->category)
+                ->orWhereHas('tags', fn (Builder $tags): Builder => $tags->whereIn('tags.id', $story->tags()->pluck('tags.id')));
+        });
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
