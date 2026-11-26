@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RegionController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\Userzone\TrashController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Middleware\EnsureActiveUser;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,7 +32,7 @@ require __DIR__.'/auth.php';
 /*
  * Userzone routes
  */
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     Route::post('stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('stories/{story}/vote', [VoteController::class, 'store'])->name('stories.vote.store');
@@ -44,6 +47,16 @@ Route::middleware('auth')->group(function () {
         Route::patch('stories/{story}/restore', [TrashController::class, 'restore'])->withTrashed()->name('stories.restore');
         Route::resource('stories', App\Http\Controllers\Userzone\StoryController::class);
         Route::resource('locations', LocationController::class)->only(['create', 'store']);
+    });
+
+    Route::prefix('admin')->name('admin.')->middleware('can:admin')->group(function () {
+        Route::get('/', App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
+        Route::resource('stories', App\Http\Controllers\Admin\StoryController::class)->only(['update', 'destroy']);
+        Route::patch('stories/{story}/restore', [App\Http\Controllers\Admin\StoryController::class, 'restore'])->withTrashed()->name('stories.restore');
+        Route::resource('comments', App\Http\Controllers\Admin\CommentController::class)->only(['update', 'destroy']);
+        Route::resource('users', UserController::class)->only('update');
+        Route::resource('locations', App\Http\Controllers\Admin\LocationController::class)->only(['update', 'destroy']);
+        Route::resource('tags', TagController::class)->only(['store', 'update', 'destroy']);
     });
 
     // For the user's profile management

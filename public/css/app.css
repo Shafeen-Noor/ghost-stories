@@ -140,3 +140,13 @@ textarea { resize: vertical; line-height: 1.8; }
 .place-map { width: 100%; height: 320px; border: 1px solid var(--line); margin: 20px 0 5px; }
 .archive .form-actions { flex-wrap: wrap; margin-bottom: 30px; }
 .archive .story-grid { margin-top: 25px; }
+
+.admin-page > section { margin-top: 45px; scroll-margin-top: 25px; }
+.admin-record { margin: 20px 0; padding: 22px; background: #faf8f2; border: 1px solid var(--line); }
+.admin-record h3 { margin-top: 0; }
+.admin-record form { margin: 12px 0; }
+.admin-record .form-actions { align-items: flex-end; }
+.admin-record label { font-size: 12px; }
+.section-nav { flex-wrap: wrap; margin: 25px 0; }
+.section-nav a { text-decoration: underline; }
+.site-header nav { flex-wrap: wrap; }

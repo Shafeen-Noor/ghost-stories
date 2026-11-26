@@ -12,6 +12,7 @@
         <a class="brand" href="{{ route('welcome') }}"><svg aria-hidden="true" viewBox="0 0 30 38" fill="none"><path d="M3 34V15a12 12 0 0 1 24 0v19l-6-4-6 4-6-4z" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="16" r="1.4" fill="currentColor"/><circle cx="19" cy="16" r="1.4" fill="currentColor"/></svg>Ghost Stories</a>
         <nav aria-label="Main navigation">
             <a href="{{ route('locations.index') }}">Places</a>
+            @can('admin')<a href="{{ route('admin.dashboard') }}">Moderation</a>@endcan
             @auth
                 <a href="{{ route('stories.index') }}">The archive</a>
                 <a href="{{ route('dashboard') }}">My campfire</a>
