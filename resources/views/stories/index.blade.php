@@ -23,8 +23,17 @@
     <section class="archive">
         <div class="section-heading">
             <div><p class="eyebrow">Keep the lights on</p><h2>The latest whispers</h2></div>
-            <span class="story-count">{{ $stories->count() }} {{ Str::plural('story', $stories->count()) }}</span>
+            <span class="story-count">{{ $stories->total() }} {{ Str::plural('story', $stories->total()) }}</span>
         </div>
+        <form method="GET" action="{{ route('stories.index') }}" class="archive-filters">
+            <div class="field"><label for="q">Search stories</label><input name="q" id="q" value="{{ $filters['q'] }}" maxlength="80" placeholder="A title or a memory"></div>
+            <div class="field"><label for="category">Category</label><select name="category" id="category"><option value="">All categories</option>@foreach(['ghost', 'urban_legend', 'conspiracy'] as $category)<option value="{{ $category }}" @selected($filters['category'] === $category)>{{ Str::headline($category) }}</option>@endforeach</select></div>
+            <div class="field"><label for="tag">Tag</label><select name="tag" id="tag"><option value="">All tags</option>@foreach($tags as $tag)<option value="{{ $tag->id }}" @selected($filters['tag'] == $tag->id)>{{ $tag->name }}</option>@endforeach</select></div>
+            <div class="field"><label for="country">Country</label><select name="country" id="country"><option value="">All countries</option>@foreach($geography->countries() as $code => $name)<option value="{{ $code }}" @selected($filters['country'] === $code)>{{ $name }}</option>@endforeach</select></div>
+            <div class="field"><label for="sort">Sort by</label><select name="sort" id="sort"><option value="latest" @selected($filters['sort'] === 'latest')>Latest</option><option value="score" @selected($filters['sort'] === 'score')>Most vouched</option></select></div>
+            <div class="form-actions"><button>Find stories</button><a href="{{ route('stories.index', ['reset' => 1]) }}">Reset filters</a></div>
+        </form>
+        @foreach($errors->all() as $error)<p class="error">{{ $error }}</p>@endforeach
         <div class="story-grid">
             @forelse($stories as $story)
                 <x-story-card :story="$story" />
@@ -32,5 +41,6 @@
                 <div class="empty-state"><h3>A quiet night. For now.</h3><p>No stories yet. Be the first to share one.</p></div>
             @endforelse
         </div>
+        {{ $stories->links() }}
     </section>
 </x-site-layout>

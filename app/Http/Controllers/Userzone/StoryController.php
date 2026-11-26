@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoryRequest;
 use App\Models\Location;
 use App\Models\Story;
+use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -16,7 +17,7 @@ class StoryController extends Controller
 {
     public function index(Request $request): View
     {
-        $stories = $request->user()->stories()->withVotingFor($request->user())->with(['author', 'location'])->latest()->get();
+        $stories = $request->user()->stories()->withVotingFor($request->user())->with(['author', 'location', 'tags'])->latest()->get();
 
         return view('userzone.stories.index', compact('stories'));
     }
@@ -24,13 +25,15 @@ class StoryController extends Controller
     public function create(Geography $geography): View
     {
         $locations = Location::orderBy('name')->get();
+        $tags = Tag::orderBy('name')->get();
 
-        return view('userzone.stories.create', compact('locations', 'geography'));
+        return view('userzone.stories.create', compact('locations', 'geography', 'tags'));
     }
 
     public function store(StoryRequest $request): RedirectResponse
     {
         $story = $request->user()->stories()->create($this->storyAttributes($request));
+        $story->tags()->sync($request->validated('tags', []));
 
         return redirect()->route('stories.show', $story)->with('status', 'Your story is now out in the world.');
     }
@@ -40,13 +43,15 @@ class StoryController extends Controller
         Gate::authorize('update', $story);
 
         $locations = Location::orderBy('name')->get();
+        $tags = Tag::orderBy('name')->get();
 
-        return view('userzone.stories.edit', compact('story', 'locations', 'geography'));
+        return view('userzone.stories.edit', compact('story', 'locations', 'geography', 'tags'));
     }
 
     public function update(StoryRequest $request, Story $story): RedirectResponse
     {
         $story->update($this->storyAttributes($request));
+        $story->tags()->sync($request->validated('tags', []));
 
         return redirect()->route('userzone.stories.index')->with('status', 'Your story has been updated.');
     }
@@ -71,7 +76,7 @@ class StoryController extends Controller
             )->id;
         }
 
-        unset($validated['country_code'], $validated['region_code']);
+        unset($validated['country_code'], $validated['region_code'], $validated['tags']);
 
         return $validated;
     }

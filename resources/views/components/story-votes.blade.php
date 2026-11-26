@@ -2,7 +2,7 @@
 
 @php($currentVote = $story->votes->first()?->value)
 <div class="story-votes" role="group" aria-label="Votes for {{ $story->title }}">
-    <span class="vote-count">{{ $story->upvotes_count }} up · {{ $story->downvotes_count }} down</span>
+    <span class="vote-count">Truth score: {{ $story->upvotes_count - $story->downvotes_count }} · {{ $story->upvotes_count }} up · {{ $story->downvotes_count }} down</span>
     @can('vote', $story)
         <form method="POST" action="{{ route('stories.vote.store', $story) }}">
             @csrf

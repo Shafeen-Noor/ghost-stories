@@ -4,6 +4,7 @@
         <p class="eyebrow">{{ Str::headline($story->category) }} · {{ $story->location->name }}</p>
         <h1>{{ $story->title }}</h1>
         <p class="story-meta">Told by {{ $story->author->name }} · <time datetime="{{ $story->created_at->toDateString() }}">{{ $story->created_at->format('F j, Y') }}</time></p>
+        <div class="tags">@foreach($story->tags as $tag)<a href="{{ route('stories.index', ['tag' => $tag->id]) }}">#{{ $tag->name }}</a>@endforeach</div>
         <x-story-actions :story="$story" />
         <x-story-votes :story="$story" />
         <div class="story-body">{{ $story->body }}</div>

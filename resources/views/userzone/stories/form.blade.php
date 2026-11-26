@@ -10,3 +10,12 @@
         @error('category')<p class="error">{{ $message }}</p>@enderror
     </div>
 <x-form-textarea name="body" label="Your story" :value="$story->body ?? ''" :required="true" minlength="20" maxlength="30000" placeholder="It started when…" />
+
+@php($selectedTags = old('tags', isset($story) ? $story->tags->modelKeys() : []))
+<fieldset class="tag-choices"><legend>Tags (up to five)</legend>
+    @foreach($tags as $tag)
+        <label><input type="checkbox" name="tags[]" value="{{ $tag->id }}" @checked(in_array($tag->id, is_array($selectedTags) ? $selectedTags : []))> {{ $tag->name }}</label>
+    @endforeach
+    @error('tags')<p class="error">{{ $message }}</p>@enderror
+    @error('tags.*')<p class="error">{{ $message }}</p>@enderror
+</fieldset>

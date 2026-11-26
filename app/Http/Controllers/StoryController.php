@@ -2,31 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Geography;
+use App\Http\Requests\ArchiveRequest;
 use App\Models\Story;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StoryController extends Controller
 {
-    public function index(Request $request): View
+    public function index(ArchiveRequest $request, Geography $geography): View|RedirectResponse
     {
-        $stories = Story::query()
-            ->withVotingFor($request->user())
-            ->where('status', 'visible')
-            ->with(['author', 'location'])
-            ->latest()
-            ->get();
+        if ($request->boolean('reset')) {
+            $request->session()->forget('archive.filters');
 
-        return view('stories.index', compact('stories'));
+            return redirect()->route('stories.index');
+        }
+
+        $filters = $request->filters();
+        $query = Story::query()->visible()->filter($filters)
+            ->withVotingFor($request->user())->with(['author', 'location', 'tags']);
+        if ($filters['sort'] === 'score') {
+            $query->orderByDesc('truth_score');
+        }
+        $stories = $query->latest()->orderByDesc('id')->paginate(9)->withQueryString();
+        $tags = Tag::orderBy('name')->get();
+
+        return view('stories.index', compact('stories', 'filters', 'tags', 'geography'));
     }
 
     public function show(Request $request, Story $story): View
     {
         abort_unless($story->status === 'visible', 404);
 
-        $story->load(['author', 'location']);
+        $story->load(['author', 'location', 'tags']);
         $story->loadCount([
             'votes as upvotes_count' => fn (Builder $votes): Builder => $votes->where('value', 1),
             'votes as downvotes_count' => fn (Builder $votes): Builder => $votes->where('value', -1),
