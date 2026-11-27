@@ -16,7 +16,7 @@ class MysteryMapController extends Controller
             'category' => ['nullable', 'string', Rule::in(array_keys(Story::CATEGORIES))],
             'country' => ['nullable', 'string', Rule::in(array_keys($geography->countries()))],
         ]);
-        $stories = Story::visible()->filter($filters)->with('location')->latest()->limit(250)->get();
+        $stories = Story::visible()->filter($filters)->select(['id', 'title', 'slug', 'category', 'location_id', 'latitude', 'longitude'])->with('location:id,name,latitude,longitude')->latest()->get();
         $pins = $stories->map(function (Story $story): ?array {
             $latitude = $story->latitude ?? $story->location->latitude;
             $longitude = $story->longitude ?? $story->location->longitude;

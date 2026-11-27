@@ -27,3 +27,9 @@ it('validates paired map coordinates while publishing', function () {
     $this->post(route('userzone.stories.store'), $data + ['latitude' => 41.4, 'longitude' => 2.1])->assertRedirect();
     $this->assertDatabaseHas('stories', ['author_id' => $user->id, 'latitude' => 41.4, 'longitude' => 2.1]);
 });
+
+it('keeps mapped stories beyond the old 250 story limit', function () {
+    $place = Location::factory()->create(['latitude' => 41.4, 'longitude' => 2.1]);
+    Story::factory()->for($place)->count(260)->create();
+    $this->get(route('discovery.map'))->assertOk()->assertViewHas('pins', fn ($pins) => $pins->count() === 260);
+});
