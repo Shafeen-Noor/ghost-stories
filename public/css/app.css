@@ -3798,3 +3798,70 @@ body {
         gap: 20px;
     }
 }
+
+/* Clear navigation and comfortable reading sizes. */
+body { font-size: 17px; }
+.navigation-row { gap: 24px; flex-wrap: wrap; padding-block: 18px; }
+.navigation-row nav { flex-wrap: wrap; gap: 22px; }
+.navigation-row nav a, .navigation-actions a, .account-menu summary { font-size: 16px; }
+.navigation-row nav a[aria-current="page"] { border-bottom: 2px solid var(--ink); }
+.admin-brand { font-size: 23px; font-weight: 800; text-decoration: none; }
+.admin-brand span { color: var(--muted); font-size: 16px; font-weight: 500; margin-left: 8px; }
+.admin-page { max-width: 1100px; }
+.admin-page>h1 { font-size: 42px; margin: 30px 0; }
+.admin-record { padding: 24px; }
+.admin-record p, .admin-record label, .admin-record select, .admin-record button { font-size: 16px; }
+.admin-page .section-heading { margin: 20px 0; }
+.home-intro { margin: 45px auto 30px; max-width: 1240px; padding: 0 22px; }
+.home-intro h1 { font-size: clamp(36px, 4vw, 58px); margin-bottom: 12px; }
+.home-intro p { font-size: 20px; color: var(--muted); }
+.tonight-feature { margin-top: 28px; padding-block: 22px; }
+.tonight-feature h2 { font-size: clamp(30px, 3vw, 46px); }
+.tonight-feature .tonight-image { max-height: 330px; }
+.masthead>a { font-size: clamp(36px, 5.5vw, 72px); }
+.field-help, .story-card p, .story-card-footer, .story-card-meta, .writer-heading a, .review-byline, .editor-toolbar button, .editor-bottom { font-size: 15px; }
+label, input, select, textarea, button { font-size: 16px; }
+.compact-writer .writer-grid { grid-template-columns: minmax(0,1fr) 320px; }
+.map-page h1 { font-size: 40px; }
+.map-controls { flex-wrap: wrap; max-width: calc(100% - 30px); }
+.map-controls button { font-size: 17px; }
+.map-tiles img { filter: none !important; opacity: 1 !important; }
+.map-land { z-index: 0; }
+.map-tiles { z-index: 1; }
+.map-pins { z-index: 2; }
+.map-controls, .map-attribution, .map-hint { z-index: 4; }
+.map-cluster { background: #7b3e32 !important; border: 4px solid #fff; width: 52px; height: 52px; border-radius: 50%; font-size: 18px; box-shadow: 0 2px 8px #0005; }
+.map-current-location { position: absolute; width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; background: #2378cb; transform: translate(-50%,-50%); box-shadow: 0 0 0 12px #2378cb30; pointer-events: none; }
+.map-results h2 { font-size: 25px; }
+.map-story-list a { display: flex; flex-direction: column; gap: 7px; font-size: 16px; }
+.map-story-list span { color: var(--muted); }
+.map-list-pages { display: flex; justify-content: space-between; gap: 12px; padding: 15px 0; }
+@media(max-width: 850px) {
+    .navigation-row { gap: 16px; }
+    .navigation-row nav { gap: 14px; }
+    .navigation-actions { margin-left: auto; }
+    .compact-writer .writer-grid { grid-template-columns: 1fr; }
+    .home-intro { margin-top: 24px; }
+}
+.compact-writer .writer-settings label, .compact-writer .writer-settings select,
+.compact-writer .location-picker summary, .compact-writer .tag-choices label,
+.pin-controls small, .writer-privacy, .compact-writer .writer-settings h2 { font-size: 15px; }
+.map-results { font-size: 17px; }
+.map-hint { font-size: 14px; }
+.google-map-canvas { position: absolute; inset: 0; z-index: 1; }
+.google-map-canvas .gm-style img { max-width: none; }
+.map-controls button[data-map-locate] { width: auto; padding: 10px 13px; min-height: 44px; white-space: nowrap; }
+.map-pin { rotate: 0deg; border-radius: 50%; font-size: 16px; }
+.map-pin:hover { transform: translate(-50%,-100%) scale(1.08); }
+.map-cluster { font-size: 18px; }
+.map-tiles img { filter: none; }
+.google-map-canvas { position: absolute; inset: 0; z-index: 0; }
+.archive .section-heading h2 { font-size: 34px; }
+.category-tabs a, .filter-drawer summary, .card-meta, .category, .card-place, .card-byline, .card-tags, .card-stats, .card-manage a { font-size: 15px; }
+.story-card time { font-size: 14px; }
+.archive .section-heading h2 { letter-spacing: -.025em; }
+.tonight-feature .tonight-image { height: 330px; min-height: 0; overflow: hidden; }
+.tonight-feature .tonight-image img { height: 100%; width: 100%; object-fit: cover; }
+.tonight-feature .eyebrow { font-size: 14px; letter-spacing: .08em; }
+.admin-record h2 { font-size: 28px; letter-spacing: -.025em; }
+.admin-record .form-actions a, .admin-record button, .admin-page .button { font-size: 16px; }

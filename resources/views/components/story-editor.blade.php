@@ -6,6 +6,6 @@
     <textarea id="body" name="body" rows="18" required minlength="20" maxlength="30000" data-editor-source placeholder="Start with the moment you still can't explain...">{{ $body }}</textarea>
     <div class="rich-editor prose" contenteditable="true" role="textbox" aria-label="Your story" aria-multiline="true" data-rich-editor hidden>{!! app(\App\StoryText::class)->render(is_string($body) ? $body : '') !!}</div>
     <div class="editor-preview prose" data-editor-preview hidden></div>
-    <div class="editor-bottom"><span data-word-count>0 words</span><span data-editor-status role="status">Use the toolbar to bring your story to life.</span></div>
+    <div class="editor-bottom"><span data-word-count>0 words</span><span data-editor-status role="status"></span></div>
     @error('body')<p class="error">{{ $message }}</p>@enderror
 </div>

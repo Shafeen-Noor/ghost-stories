@@ -7,23 +7,44 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
     <script src="{{ asset('js/editorial.js') }}?v={{ filemtime(public_path('js/editorial.js')) }}" defer></script>
 </head>
-@php($isWriting = request()->routeIs('userzone.stories.create', 'userzone.stories.edit'))
-<body @class(['is-writing' => $isWriting, 'inner-page' => !$isWriting && !request()->routeIs('stories.index')])>
+@php($isWriting = request()->routeIs('userzone.stories.create', 'userzone.stories.edit', 'admin.stories.create'))
+@php($isAdmin = auth()->check() && auth()->user()->is_admin)
+<body @class(['is-writing' => $isWriting, 'inner-page' => !$isWriting && !request()->routeIs('stories.index'), 'admin-shell' => $isAdmin])>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="publication-header">
         <div class="navigation-row">
-            <nav aria-label="Main navigation"><a href="{{ route('cases.tonight') }}">Tonight’s case</a><a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.*')) aria-current="page" @endif>Stories</a><a href="{{ route('discovery.map') }}" @if(request()->routeIs('discovery.map')) aria-current="page" @endif>Mystery map</a><a href="{{ route('locations.index') }}" @if(request()->routeIs('locations.*')) aria-current="page" @endif>Places</a><a href="{{ route('discovery.random') }}">Surprise me ↗</a></nav>
-            <div class="navigation-actions">
-                @auth
-                    <a class="write-link" href="{{ route('userzone.stories.create') }}">Write a story <span aria-hidden="true">↗</span></a>
-                    <details class="account-menu"><summary><span class="avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span class="account-label">My account</span><span aria-hidden="true">⌄</span></summary><div class="account-dropdown"><strong>{{ auth()->user()->name }}</strong><a href="{{ route('dashboard') }}">Investigation desk</a><a href="{{ route('collections.index') }}">Saved collections</a><a href="{{ route('userzone.stories.index') }}">My stories</a><a href="{{ route('userzone.trash.index') }}">Trash</a><a href="{{ route('profile.edit') }}">Account settings</a>@can('admin')<a href="{{ route('admin.dashboard') }}">Moderation</a>@endcan<form method="POST" action="{{ route('logout') }}">@csrf<button class="text-button">Log out</button></form></div></details>
-                @else
-                    <a href="{{ route('login') }}">Log in</a><a class="write-link" href="{{ route('register') }}">Join the journal ↗</a>
-                @endauth
-            </div>
+            @if($isAdmin)
+                <a class="admin-brand" href="{{ route('admin.dashboard') }}">Unexplained <span>Admin</span></a>
+                <nav aria-label="Admin navigation">
+                    @foreach(['stories' => 'Stories', 'mystery' => 'Featured mystery', 'comments' => 'Comments', 'users' => 'Users', 'places' => 'Places', 'tags' => 'Tags'] as $section => $label)
+                        <a href="{{ route('admin.dashboard', ['section' => $section]) }}" @if(request()->routeIs('admin.dashboard') && request('section', 'stories') === $section) aria-current="page" @endif>{{ $label }}</a>
+                    @endforeach
+                </nav>
+                <div class="navigation-actions"><a href="{{ route('stories.index') }}">View website</a><form method="POST" action="{{ route('logout') }}">@csrf<button class="text-button">Log out</button></form></div>
+            @else
+                <nav aria-label="Main navigation">
+                    <a href="{{ route('stories.index') }}" @if(request()->routeIs('stories.index', 'stories.show')) aria-current="page" @endif>Stories</a>
+                    <a href="{{ route('discovery.map') }}" @if(request()->routeIs('discovery.map')) aria-current="page" @endif>Map</a>
+                    <a href="{{ route('cases.tonight') }}">Featured mystery</a>
+                    <a href="{{ route('discovery.random') }}">Surprise me</a>
+                    @auth
+                        <a href="{{ route('collections.index') }}" @if(request()->routeIs('collections.*')) aria-current="page" @endif>Saved</a>
+                        <a href="{{ route('userzone.stories.index') }}" @if(request()->routeIs('userzone.stories.index')) aria-current="page" @endif>My stories</a>
+                    @endauth
+                </nav>
+                <div class="navigation-actions">
+                    @auth
+                        <a class="write-link" href="{{ route('userzone.stories.create') }}">Write a story</a>
+                        <details class="account-menu"><summary>Account</summary><div class="account-dropdown"><strong>{{ auth()->user()->name }}</strong><a href="{{ route('dashboard') }}">Reading activity</a><a href="{{ route('userzone.trash.index') }}">Trash</a><a href="{{ route('profile.edit') }}">Settings</a><form method="POST" action="{{ route('logout') }}">@csrf<button class="text-button">Log out</button></form></div></details>
+                    @else
+                        <a href="{{ route('login') }}">Log in</a><a class="write-link" href="{{ route('register') }}">Sign up</a>
+                    @endauth
+                </div>
+            @endif
         </div>
-        <div class="utility-bar"><span><i class="live-dot" aria-hidden="true"></i> AN INDEPENDENT JOURNAL OF THE UNEXPLAINED</span><span>{{ now()->format('l, F j, Y') }}</span></div>
-        <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Unexplained home">The Unexplained<span class="masthead-star" aria-hidden="true">✳</span></a></div>
+        @unless($isAdmin || $isWriting)
+            <div class="masthead"><a href="{{ route('stories.index') }}" aria-label="Unexplained home">The Unexplained</a></div>
+        @endunless
     </header>
     <main id="main-content">
         @if(session('status'))<p class="notice" role="status"><span aria-hidden="true">✓</span> {{ match(session('status')) { 'profile-updated' => 'Your account details have been saved.', 'password-updated' => 'Your password has been updated.', default => session('status') } }}</p>@endif
