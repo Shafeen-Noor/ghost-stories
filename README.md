@@ -257,7 +257,7 @@ Controller paths in this table are under `app/Http/Controllers`; view paths are 
 | --- | --- |
 | `/`, `/stories` | Public featured case, archive, search, filters and pagination. |
 | `/stories/{slug}` | Public visible story and discussion. Votes/comments require login. |
-| `/tonight` | Redirect to the day's featured visible case. |
+| `/tonight` | Redirect to the admin-selected featured mystery. |
 | `/cases/{slug}`, `/trails/{slug}` | Public sequential account and related stories. Poll voting requires login. |
 | `/map`, `/discover` | Public atlas and random visible story. |
 | `/locations`, `/locations/{id}` | Public place directory and its visible stories. |
@@ -277,7 +277,7 @@ Use links and forms for write actions. Visiting a POST/PATCH/DELETE endpoint dir
 ## Storage, configuration and external services
 
 - **Soft deletion:** stories use `deleted_at`. Public queries exclude trash. Restoring preserves the slug, tags, comments, votes and files. Permanent account deletion separately removes owned content through observers and foreign keys.
-- **Cache:** archive statistics last five minutes and are invalidated by observers. The featured case ID is cached until the end of the day; hidden/trashed selections are replaced. Personal vote controls are not stored in the shared statistics cache.
+- **Cache:** archive statistics last five minutes and are invalidated by observers. The featured mystery uses stories.is_featured, selected by an administrator. Hidden or trashed selections are not shown and are not automatically replaced. Personal vote controls are not stored in the shared statistics cache.
 - **Sessions:** archive filters, last random discovery, case reveal progress and last desk visit. Login regenerates the session ID; logout invalidates it and regenerates the CSRF token.
 - **Media:** JPG/PNG/WebP, up to 4 MB each; up to six gallery photos. Files are served through a visibility/ownership-checking controller. No `storage:link` is required for these private files. Never put the private storage directory under a public web root.
 - **PHP upload configuration:** in the PHP configuration used by the web server, allow `upload_max_filesize=4M` or higher and `post_max_size=40M` or higher. CLI and web-server PHP can load different INI files; `php --ini` reports the CLI configuration. Restart the relevant PHP service after changing its INI file.
@@ -355,7 +355,7 @@ These are the main installation/runtime failures and their recovery steps. This 
 ## Defence walkthrough
 
 1. Open `/` and explain `WelcomeController` redirecting to `StoryController@index`, the query and the shared Blade layout.
-2. Open tonight's case. Reveal the account, choose an interpretation, and explain the session progress, cached featured ID and CaseOpinion relationship.
+2. Open tonight's case. Reveal the account, choose an interpretation, and explain the session progress, admin-selected featured story and CaseOpinion relationship.
 3. Sign in as the assessment admin. Create/edit the admin-owned story. Follow `StoryRequest` → controller → model/media handling → redirect and flash message. Show the stable slug.
 4. Trash and restore the story. Show `deleted_at`, the SoftDeletes trait and the ownership policy. Explain how hidden moderation differs from deletion.
 5. Use an ordinary reader to vote/comment/save a collection. Show the unique vote constraint, parent/reply relationship and private collection ownership check.
@@ -370,3 +370,14 @@ The core proposal is implemented. Optional proposal ideas such as abuse reports,
 Browser QA covered case reveals/results, login errors, ordinary-reader vote switching, rich text escaping, a real image upload, preview/publication, editing with the original slug/photo, collections, investigation desk, reading mode, map filtering and responsive layouts. Fixes included sidebar overlap, reply counts, unstable daily selection, conflicting collection inputs, clipped map pins and stale assets. Destructive account deletion and physical-device testing were not part of that browser pass; account cleanup has automated tests.
 
 The installation checks use a separate temporary SQLite database to exercise key generation, `migrate:fresh --seed` and repeatable seeding. Do not substitute the working demo database for that temporary test database.
+
+
+## Maps and admin navigation update
+
+Administrators land on `/admin`. Its top navigation opens one section at a time: stories, featured mystery, comments, users, places and tags. To feature an existing visible story, open **Featured mystery** and choose **Feature this mystery**. **Write a mystery** opens the editor for an admin-authored story. Publish it, then select it for the highlight. The selection stays until an admin changes it. Normal readers cannot change this setting. Existing records are preserved by `php artisan migrate`.
+
+`GOOGLE_MAPS_API_KEY` is optional. When supplied in `.env`, the map uses Google Maps JavaScript API with the same local story coordinates and clustering. Otherwise it uses OpenStreetMap street tiles and the bundled outline fallback. Google requires a verified, billing-enabled project. Enable Maps JavaScript API, restrict the browser key to that API and your exact HTTP/HTTPS site referrers, and configure quotas/budget alerts in Google Cloud. Never commit a real key. Run `php artisan config:clear` after changing it. Google Maps cannot be verified end-to-end until a working key is supplied.
+
+**My location** requests the browser's permission only after a click. Use a trusted HTTPS URL (Herd: `herd secure ghost-stories`) or localhost. Permission denial and unavailable/timeout states leave manual map navigation available. The browsing position is not saved as a story coordinate. In the writing map, it becomes a proposed pin that is stored only on publication. Existing story coordinates remain unchanged by clustering.
+
+Run the clustering regression checks with `node --test tests/map-clusters.test.cjs`. They cover 10,000 overlapping points, zoom-dependent separation and grid-boundary neighbours. This checks grouping logic, not a full load test of 10,000 database records or a physical-device GPS test.
