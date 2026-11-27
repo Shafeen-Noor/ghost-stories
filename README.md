@@ -13,15 +13,12 @@ The original proposal was **Ghost Stories Map**. The repository and local domain
 - [Running locally](#running-locally)
 - [Demo accounts and seeded data](#demo-accounts-and-seeded-data)
 - [Updating an existing installation](#updating-an-existing-installation)
-- [Assessment checklist](#assessment-checklist)
 - [Models and relationships](#models-and-relationships)
 - [MVC and important file paths](#mvc-and-important-file-paths)
 - [Pages and access](#pages-and-access)
 - [Storage, configuration and external services](#storage-configuration-and-external-services)
 - [Tests and checks](#tests-and-checks)
 - [Troubleshooting](#troubleshooting)
-- [Defence walkthrough](#defence-walkthrough)
-- [Scope and verification](#scope-and-verification)
 
 All file paths below are relative to the repository root, the folder containing `artisan` and `composer.json`.
 
@@ -162,29 +159,6 @@ php artisan migrate:fresh --seed
 
 A database reset does not erase old uploaded files from disk. Database rows and uploaded files are separate resources; retain them together in backups. Do not blindly delete a storage directory containing real user uploads.
 
-## Assessment checklist
-
-| Requirement | Implementation / evidence |
-| --- | --- |
-| Public Git repository; atomic increments | Public repository linked above; functional work and cleanup are recorded in separate commits. |
-| Own application based on the submitted idea | Original six-model story/place community remains; map, case files, polls, collections and investigation desk add distinct workflows. |
-| At least three models, including User | Eight models, listed below. |
-| At least one 1:N relationship | User → stories; Location → stories; Story → comments/votes/opinions; User → collections. |
-| Model, migration and factory for every model | `app/Models`, `database/migrations`, `database/factories`. |
-| Factories called in DatabaseSeeder | All eight factories are used in `database/seeders/DatabaseSeeder.php`; seeded-install tests check all eight tables. |
-| Every application route targets a controller | `routes/web.php` and `routes/auth.php`. Framework/vendor health/debug routes are outside the application route definitions. |
-| Full seven-method CRUD | `Userzone/StoryController`: index, show, create, store, edit, update, destroy. |
-| Input validation and error feedback | Form requests and controller validation; inline errors, old input, named error bags, and status messages. Ignored/privileged client fields are not mass-assigned. |
-| Login/register | Starter authentication controllers and Blade forms in `resources/views/auth`. |
-| Current user in a view | Account menu, comment composer, author controls and preview byline. |
-| Current user in a controller | New stories/comments belong to the current user; policies protect ownership; collections are scoped to their owner. |
-| Shared layout and necessary views | `components/site-layout.blade.php`; `layouts/guest.blade.php` for authentication. |
-| Seeded assessment admin | `admin@admin.com` / `password`, enforced in DatabaseSeeder. |
-| Relevant welcome page | `/` redirects to `/stories`, with the featured case and seeded archive. |
-| Extra course concepts | Unique slugs, soft deletion/restoration, cache invalidation, sessions, eager loading, private media and authorisation policies. |
-
-The proposal's display username is implemented as `User.name`; roles use `is_admin` / `is_banned`; password hashing uses Laravel's password cast. Story URLs use a stable unique slug instead of a numeric ID. The tag pivot is Laravel's conventional `story_tag`. These are implementation choices within the proposed model, not additional external requirements.
-
 ## Models and relationships
 
 Every model below has its corresponding `*Factory.php` in `database/factories`.
@@ -283,7 +257,7 @@ Use links and forms for write actions. Visiting a POST/PATCH/DELETE endpoint dir
 - **PHP upload configuration:** in the PHP configuration used by the web server, allow `upload_max_filesize=4M` or higher and `post_max_size=40M` or higher. CLI and web-server PHP can load different INI files; `php --ini` reports the CLI configuration. Restart the relevant PHP service after changing its INI file.
 - **Mail:** `MAIL_MAILER=log` records local password-reset/email messages in `storage/logs/laravel.log`; it does not deliver mail to an inbox. Configure a real SMTP service only if inbox delivery is required. Email verification is not required to browse/post in this demo.
 - **Queues:** no queue worker is required; `.env.example` uses `QUEUE_CONNECTION=sync`.
-- **Map:** street tiles use OpenStreetMap with visible attribution. The local world outline is derived from the public-domain [Natural Earth 110m land dataset](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson). Country/region data is bundled with its licence in `resources/geography-LICENSE.txt`.
+- **Map:** street tiles use OpenStreetMap with visible attribution. Nearby stories form screen-distance clusters that split as you zoom in. Selecting a group lists its stories, 20 per page. Identical coordinates stay grouped. The map retrieves compact pin data without the former 250-story cap. The local world outline is derived from the public-domain [Natural Earth 110m land dataset](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson). Country/region data is bundled with its licence in `resources/geography-LICENSE.txt`.
 - **Debugging:** `.env.example` disables the debug toolbar. Enable `DEBUGBAR_ENABLED=true` only when you want it locally. `APP_DEBUG=true` is intended for the local assessment environment; use false for a public deployment.
 
 ## Tests and checks
@@ -351,26 +325,6 @@ These are the main installation/runtime failures and their recovery steps. This 
 | Reset email never arrives | The default mail driver writes to the log. Read the latest local reset message or configure SMTP; an inbox message is not sent by the log driver. |
 | Chrome warns about the demo password | `password` is deliberately the required assessment credential. Do not use it for a real account or save it to your personal password manager. |
 | An unexplained 500 response | Inspect the latest entry in `storage/logs/laravel.log`, then check key, database, permissions and extensions before changing code. Do not publish the entire log or `.env`. |
-
-## Defence walkthrough
-
-1. Open `/` and explain `WelcomeController` redirecting to `StoryController@index`, the query and the shared Blade layout.
-2. Open tonight's case. Reveal the account, choose an interpretation, and explain the session progress, admin-selected featured story and CaseOpinion relationship.
-3. Sign in as the assessment admin. Create/edit the admin-owned story. Follow `StoryRequest` → controller → model/media handling → redirect and flash message. Show the stable slug.
-4. Trash and restore the story. Show `deleted_at`, the SoftDeletes trait and the ownership policy. Explain how hidden moderation differs from deletion.
-5. Use an ordinary reader to vote/comment/save a collection. Show the unique vote constraint, parent/reply relationship and private collection ownership check.
-6. Explain User → Story and Location → Story as 1:N, and Story ↔ Tag / ReadingCollection ↔ Story as N:M pivots.
-7. Show shared model scopes (`withCardDataFor`, `threadsFor`, `visibleInThread`), eager loading and the five-minute statistics cache with observer invalidation.
-8. Change a small label or category label in its central definition, run a focused test and reload. For validation changes, change a rule and demonstrate the error in the form.
-
-## Scope and verification
-
-The core proposal is implemented. Optional proposal ideas such as abuse reports, full-text indexing, weekly trending, reputation and verified badges are not required by the current subset and are not implemented. Email delivery services and queue workers are not required.
-
-Browser QA covered case reveals/results, login errors, ordinary-reader vote switching, rich text escaping, a real image upload, preview/publication, editing with the original slug/photo, collections, investigation desk, reading mode, map filtering and responsive layouts. Fixes included sidebar overlap, reply counts, unstable daily selection, conflicting collection inputs, clipped map pins and stale assets. Destructive account deletion and physical-device testing were not part of that browser pass; account cleanup has automated tests.
-
-The installation checks use a separate temporary SQLite database to exercise key generation, `migrate:fresh --seed` and repeatable seeding. Do not substitute the working demo database for that temporary test database.
-
 
 ## Maps and admin navigation update
 
