@@ -47,6 +47,10 @@ class StoryController extends Controller
     {
         $story = $this->saveStory($request);
 
+        if ($request->routeIs('admin.stories.store')) {
+            return redirect()->route('admin.dashboard', ['section' => 'mystery'])->with('status', 'Mystery created. Choose Feature mystery to add it to highlights.');
+        }
+
         return redirect()->route('stories.show', $story)->with('status', 'Your story is now out in the world.');
     }
 

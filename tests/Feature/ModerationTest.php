@@ -15,7 +15,10 @@ it('allows an administrator to open every moderation section', function () {
     Comment::factory()->create();
     Tag::factory()->create();
 
-    $this->actingAs(User::factory()->admin()->create())->get(route('admin.dashboard'))->assertOk()->assertSee('Moderation')->assertSee('Suspend account')->assertSee('Save place details')->assertSee('Add tag');
+    $this->actingAs(User::factory()->admin()->create());
+    foreach (['stories' => 'Move to trash', 'comments' => 'Delete comment', 'users' => 'Suspend account', 'places' => 'Save place details', 'tags' => 'Add tag'] as $section => $control) {
+        $this->get(route('admin.dashboard', ['section' => $section]))->assertOk()->assertSee($control);
+    }
 });
 
 it('lets an admin hide stories and comments without changing their authors', function () {

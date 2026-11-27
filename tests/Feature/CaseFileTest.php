@@ -58,13 +58,13 @@ it('selects a visible featured case and excludes hidden accounts from trails', f
     expect(app(CaseFile::class)->parts($story))->not->toBeEmpty();
 });
 
-it('keeps tonights case stable when stories are added and replaces it when hidden', function () {
+it('keeps the selected mystery stable and does not replace hidden selections automatically', function () {
     Cache::forget('cases.featured.'.now()->toDateString());
-    Story::factory()->count(2)->create();
+    Story::factory()->create(['is_featured' => true]);
     $file = app(CaseFile::class);
     $first = $file->featured();
     Story::factory()->create();
     expect($file->featured()->id)->toBe($first->id);
     $first->update(['status' => 'hidden']);
-    expect($file->featured()->id)->not->toBe($first->id);
+    expect($file->featured())->toBeNull();
 });

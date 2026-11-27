@@ -130,5 +130,9 @@ In the morning, there were seven dark marks in the wood. They have never dried.'
                 ]);
             }
         }
+        if (! Story::withTrashed()->where('is_featured', true)->exists()) {
+            Story::where('title', 'The last train never left')->update(['is_featured' => true]);
+        }
+
     }
 }

@@ -4,26 +4,12 @@ namespace App;
 
 use App\Models\Story;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class CaseFile
 {
     public function featured(): ?Story
     {
-        $key = 'cases.featured.'.now()->toDateString();
-        $cached = Cache::get($key);
-        $story = $cached ? Story::visible()->with(['author', 'location'])->find($cached) : null;
-        if ($story) {
-            return $story;
-        }
-        Cache::forget($key);
-        $id = Cache::remember($key, now()->endOfDay(), function (): ?int {
-            $count = Story::visible()->count();
-
-            return $count ? Story::visible()->orderBy('id')->skip(((int) now()->format('z')) % $count)->value('id') : null;
-        });
-
-        return $id ? Story::visible()->with(['author', 'location'])->find($id) : null;
+        return Story::visible()->where('is_featured', true)->with(['author', 'location'])->first();
     }
 
     /** @return list<string> */

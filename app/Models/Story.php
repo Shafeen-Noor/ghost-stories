@@ -34,7 +34,7 @@ class Story extends Model
 
     protected function casts(): array
     {
-        return ['gallery_paths' => 'array'];
+        return ['gallery_paths' => 'array', 'is_featured' => 'boolean'];
     }
 
     public function coverUrl(): string

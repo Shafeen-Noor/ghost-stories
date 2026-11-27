@@ -71,6 +71,9 @@ Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
 
     Route::prefix('admin')->name('admin.')->middleware('can:admin')->group(function () {
         Route::get('/', App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
+        Route::get('mysteries/create', [App\Http\Controllers\Userzone\StoryController::class, 'create'])->name('stories.create');
+        Route::post('mysteries', [App\Http\Controllers\Userzone\StoryController::class, 'store'])->name('stories.store');
+        Route::patch('stories/{story}/feature', [App\Http\Controllers\Admin\StoryController::class, 'feature'])->name('stories.feature');
         Route::resource('stories', App\Http\Controllers\Admin\StoryController::class)->only(['update', 'destroy']);
         Route::patch('stories/{story}/restore', [App\Http\Controllers\Admin\StoryController::class, 'restore'])->withTrashed()->name('stories.restore');
         Route::resource('comments', App\Http\Controllers\Admin\CommentController::class)->only(['update', 'destroy']);

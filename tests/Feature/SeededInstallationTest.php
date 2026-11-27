@@ -21,7 +21,7 @@ it('seeds every model and the required administrator on a clean database', funct
     $this->get(route('stories.index'))->assertOk()->assertSee('Someone is still upstairs');
     $this->post(route('login'), ['email' => 'admin@admin.com', 'password' => 'password'])->assertSessionHasNoErrors()->assertRedirect();
     $this->get(route('admin.dashboard'))->assertOk();
-    $this->get(route('dashboard'))->assertOk();
+    $this->get(route('dashboard'))->assertRedirect(route('admin.dashboard'));
     $this->get(route('userzone.stories.index'))->assertOk()->assertSee('The floor above the top floor');
     $this->get(route('profile.edit'))->assertOk();
 });
